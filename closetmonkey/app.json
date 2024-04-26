@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "SMMS1",
-    "slug": "SMMS1",
+    "name": "closetmonkey",
+    "slug": "closetmonkey",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,23 +15,22 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.professorsmms.SMMS1"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.professorsmms.SMMS1"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "898aa84e-ee00-4b97-8da3-967526fddf3d"
+        "projectId": "c6b76ca5-193f-4425-9606-5f51daa6b2d1"
       }
-    }
+    },
+    "owner": "professorsmms"
   }
 }
