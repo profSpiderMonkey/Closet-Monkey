@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  closet-monkey-backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pi
+    ports:
+      - "3001:3001"
+    volumes:
+      - ../backend/data:/app/backend/data
+      - ../backend/uploads:/app/backend/uploads
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    restart: unless-stopped
+
+  # Add other services here (Redis, etc.) as needed

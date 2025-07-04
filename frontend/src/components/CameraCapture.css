@@ -1,0 +1,315 @@
+/* CameraCapture.css - Styles for ClosetMonkey Camera Module */
+
+.camera-capture {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #f5f5f5;
+  position: relative;
+}
+
+/* Header Styles */
+.capture-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #2c3e50;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.capture-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.camera-selector {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #34495e;
+  background-color: #34495e;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.camera-selector:hover {
+  background-color: #415b76;
+}
+
+/* Capture Container */
+.capture-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.camera-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* Capture Overlay */
+.capture-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+}
+
+.guidelines {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  backdrop-filter: blur(5px);
+}
+
+.guideline-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.guideline-item:last-child {
+  margin-bottom: 0;
+}
+
+.guideline-icon {
+  color: #27ae60;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+/* Action Buttons */
+.capture-actions,
+.preview-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  background-color: white;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #7f8c8d;
+  transform: translateY(-1px);
+}
+
+.capture-btn {
+  background-color: #e74c3c;
+}
+
+.capture-btn:hover:not(:disabled) {
+  background-color: #c0392b;
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+.camera-icon {
+  font-size: 20px;
+}
+
+/* Preview State */
+.preview-state .preview-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #2c3e50;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 600px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Error State */
+.error-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 40px;
+}
+
+.error-message {
+  text-align: center;
+  max-width: 500px;
+}
+
+.error-message h3 {
+  color: #e74c3c;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.error-message p {
+  color: #555;
+  font-size: 16px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.permission-instructions {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.permission-instructions p {
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.permission-instructions ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #555;
+}
+
+.permission-instructions li {
+  margin-bottom: 8px;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #ecf0f1;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  color: #555;
+  font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .capture-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .camera-selector {
+    width: 100%;
+  }
+  
+  .capture-actions,
+  .preview-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  .guidelines {
+    font-size: 12px;
+  }
+}
+
+/* Raspberry Pi Touch Display Optimizations */
+@media (max-width: 800px) and (max-height: 480px) {
+  .capture-header {
+    padding: 12px;
+  }
+  
+  .capture-header h2 {
+    font-size: 20px;
+  }
+  
+  .capture-container {
+    padding: 10px;
+  }
+  
+  .guidelines {
+    padding: 10px;
+    font-size: 11px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
