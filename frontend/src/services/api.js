@@ -20,11 +20,6 @@ class ApiService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      // Handle empty responses (like DELETE)
-      if (response.status === 204) {
-        return null;
-      }
-      
       return await response.json();
     } catch (error) {
       console.error('API request failed:', error);
@@ -33,141 +28,79 @@ class ApiService {
   }
 
   // Wardrobe Items
-  async getWardrobeItems() {
-    return this.request('/wardrobe');
+  async getItems() {
+    return this.request('/items');
   }
 
-  async getWardrobeItem(id) {
-    return this.request(`/wardrobe/${id}`);
-  }
-
-  async createWardrobeItem(itemData, imageFile = null) {
-    const formData = new FormData();
-    
-    // Add all item data
-    Object.keys(itemData).forEach(key => {
-      if (itemData[key] !== null && itemData[key] !== undefined) {
-        formData.append(key, itemData[key]);
-      }
-    });
-    
-    // Add image if provided
-    if (imageFile) {
-      formData.append('image', imageFile);
-    }
-
-    return this.request('/wardrobe', {
+  async addItem(formData) {
+    return this.request('/items', {
       method: 'POST',
-      headers: {}, // Don't set Content-Type for FormData
+      headers: {}, // Remove Content-Type to let browser set it for FormData
       body: formData,
     });
   }
 
-  async updateWardrobeItem(id, itemData, imageFile = null) {
-    const formData = new FormData();
-    
-    Object.keys(itemData).forEach(key => {
-      if (itemData[key] !== null && itemData[key] !== undefined) {
-        formData.append(key, itemData[key]);
-      }
-    });
-    
-    if (imageFile) {
-      formData.append('image', imageFile);
-    }
-
-    return this.request(`/wardrobe/${id}`, {
+  async updateItem(id, itemData) {
+    return this.request(`/items/${id}`, {
       method: 'PUT',
-      headers: {},
-      body: formData,
+      body: JSON.stringify(itemData),
     });
   }
 
-  async deleteWardrobeItem(id) {
-    return this.request(`/wardrobe/${id}`, {
+  async deleteItem(id) {
+    return this.request(`/items/${id}`, {
       method: 'DELETE',
     });
   }
 
-  async searchWardrobeItems(query) {
-    return this.request(`/wardrobe/search/${encodeURIComponent(query)}`);
-  }
-
-  async getWardrobeItemsByCategory(category) {
-    return this.request(`/wardrobe/category/${encodeURIComponent(category)}`);
-  }
-
-  // Outfits
-  async getOutfits() {
-    return this.request('/outfits');
-  }
-
-  async createOutfit(outfitData) {
-    return this.request('/outfits', {
+  // RFID Tracking
+  async logWearEvent(rfidTags) {
+    return this.request('/wear-events', {
       method: 'POST',
-      body: JSON.stringify(outfitData),
+      body: JSON.stringify({ rfidTags, timestamp: new Date().toISOString() }),
     });
   }
 
-  async updateOutfit(id, outfitData) {
-    return this.request(`/outfits/${id}`, {
+  async getWearHistory() {
+    return this.request('/wear-events');
+  }
+
+  // Outfit Suggestions
+  async getOutfitSuggestions(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    return this.request(`/outfit-suggestions?${queryString}`);
+  }
+
+  // Laundry Management
+  async markItemDirty(itemId) {
+    return this.request(`/items/${itemId}/laundry`, {
       method: 'PUT',
-      body: JSON.stringify(outfitData),
+      body: JSON.stringify({ status: 'dirty' }),
     });
   }
 
-  async deleteOutfit(id) {
-    return this.request(`/outfits/${id}`, {
-      method: 'DELETE',
+  async markItemClean(itemId) {
+    return this.request(`/items/${itemId}/laundry`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'clean' }),
     });
   }
 
-  // RFID Events
-  async getRFIDEvents() {
-    return this.request('/rfid/events');
+  async getDirtyItems() {
+    return this.request('/items?laundryStatus=dirty');
   }
 
-  async createRFIDEvent(eventData) {
-    return this.request('/rfid/event', {
-      method: 'POST',
-      body: JSON.stringify(eventData),
-    });
+  // Weather Integration
+  async getWeather() {
+    return this.request('/weather');
   }
 
-  // Health Check
-  async getHealth() {
-    return this.request('/health');
-  }
-
-  // WebSocket connection for real-time RFID updates
-  connectWebSocket(onMessage, onError = null) {
-    const wsUrl = API_BASE_URL.replace('http', 'ws').replace('/api', '');
-    const ws = new WebSocket(wsUrl);
-    
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-    };
-    
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        onMessage(data);
-      } catch (error) {
-        console.error('Failed to parse WebSocket message:', error);
-      }
-    };
-    
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      if (onError) onError(error);
-    };
-    
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-    };
-    
-    return ws;
+  // Calendar Integration
+  async getCalendarEvents() {
+    return this.request('/calendar');
   }
 }
 
-export default new ApiService();
+// Create and export a single instance
+const api = new ApiService();
+export default api;

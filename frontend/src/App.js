@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, Plus, Eye, Shirt, Calendar, Cloud, Users, ShoppingBag, Search, Filter, Star, MapPin, Thermometer, AlertCircle, CheckCircle, Upload, X } from 'lucide-react';
-import ApiService from './services/api';
+import api from './services/api';
 import CameraCapture from './components/CameraCapture';
 
 const ClosetMonkeyMVP = () => {
@@ -49,7 +49,7 @@ const ClosetMonkeyMVP = () => {
   const loadWardrobeItems = async () => {
     try {
       setLoading(true);
-      const items = await ApiService.getWardrobeItems();
+      const items = await api.getItems();
       setWardrobeItems(items);
     } catch (err) {
       setError('Failed to load wardrobe items');
@@ -58,44 +58,51 @@ const ClosetMonkeyMVP = () => {
       setLoading(false);
     }
   };
+const addItem = async () => {
+  if (!newItem.name || !newItem.category) {
+    setError('Please fill in name and category');
+    return;
+  }
 
-  const addItem = async () => {
-    if (!newItem.name || !newItem.category) {
-      setError('Please fill in name and category');
-      return;
+  try {
+    setLoading(true);
+    
+    // Create FormData for the API call
+    const formData = new FormData();
+    if (uploadedImage) {
+      formData.append('image', uploadedImage);
     }
-
-    try {
-      setLoading(true);
-      const createdItem = await ApiService.createWardrobeItem(newItem, uploadedImage);
-      setWardrobeItems([createdItem, ...wardrobeItems]);
-      setNewItem({
-        name: '',
-        category: '',
-        color: '',
-        brand: '',
-        rfidTag: '',
-        material: '',
-        size: '',
-        description: ''
-      });
-      setUploadedImage(null);
-      setSuccess('Item added successfully!');
-      setCurrentView('wardrobe');
-    } catch (err) {
-      setError('Failed to add item');
-      console.error('Error adding item:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    formData.append('itemData', JSON.stringify(newItem));
+    
+    const createdItem = await api.addItem(formData);
+    setWardrobeItems([createdItem, ...wardrobeItems]);
+    setNewItem({
+      name: '',
+      category: '',
+      color: '',
+      brand: '',
+      rfidTag: '',
+      material: '',
+      size: '',
+      description: ''
+    });
+    setUploadedImage(null);
+    setSuccess('Item added successfully!');
+    setCurrentView('wardrobe');
+  } catch (err) {
+    setError('Failed to add item');
+    console.error('Error adding item:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const deleteItem = async (itemId) => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
 
     try {
       setLoading(true);
-      await ApiService.deleteWardrobeItem(itemId);
+      await api.deleteItem(itemId);
       setWardrobeItems(wardrobeItems.filter(item => item.id !== itemId));
       setSuccess('Item deleted successfully!');
     } catch (err) {
@@ -308,25 +315,32 @@ const ClosetMonkeyMVP = () => {
           <label className="block text-sm font-medium mb-2">Take Photo or Upload</label>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
             {uploadedImage ? (
-              <div className="space-y-4">
-                <div className="relative">
-                  <img 
-                    src={URL.createObjectURL(uploadedImage)}
-                    alt="Uploaded item"
-                    className="mx-auto max-h-32 rounded-lg"
-                  />
-                  <button
-                    onClick={() => setUploadedImage(null)}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                <p className="text-sm text-green-600">
-                  Image ready! AI detection in progress...
-                </p>
-              </div>
-            ) : (
+  <div className="space-y-4">
+    <div className="relative">
+      {/* ✅ Add proper validation before createObjectURL */}
+      {uploadedImage && uploadedImage instanceof File ? (
+        <img 
+          src={URL.createObjectURL(uploadedImage)}
+          alt="Uploaded item"
+          className="mx-auto max-h-32 rounded-lg"
+        />
+      ) : (
+        <div className="mx-auto max-h-32 rounded-lg bg-gray-200 flex items-center justify-center p-4">
+          <span className="text-gray-500">Invalid image file</span>
+        </div>
+      )}
+      <button
+        onClick={() => setUploadedImage(null)}
+        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+    <p className="text-sm text-green-600">
+      Image ready! AI detection in progress...
+    </p>
+  </div>
+) : (
               <div className="space-y-4">
                 <Camera className="h-12 w-12 text-gray-400 mx-auto" />
                 <p className="text-gray-600">Take a photo or upload an image</p>
