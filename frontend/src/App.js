@@ -113,34 +113,88 @@ const addItem = async () => {
     }
   };
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setUploadedImage(file);
-      // Simulate AI detection (replace with actual Google Vision API later)
-      simulateAIDetection();
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    setUploadedImage(file);
+    performAIDetection(file); // Use real AI instead of simulation
+  }
+};
+
+
+const handleCameraCapture = (capturedFile) => {
+  setUploadedImage(capturedFile);
+  setShowCamera(false);
+  performAIDetection(capturedFile); // Use real AI
+};
+const performAIDetection = async (imageFile) => {
+  try {
+    setLoading(true);
+    console.log('Starting AI detection with file:', imageFile);
+    
+    const scanResult = await api.scanOutfit(imageFile);
+    console.log('AI Scan Result:', scanResult);
+    
+    if (scanResult.detectedItemsCount > 0 || scanResult.detectedColors?.length > 0) {
+      // Map Vision API types to your categories
+      const categoryMapping = {
+        'shirt': 'Shirts',
+        't-shirt': 'Shirts',
+        'blouse': 'Shirts',
+        'top': 'Shirts',
+        'pants': 'Pants',
+        'jeans': 'Pants',
+        'trousers': 'Pants',
+        'jacket': 'Jackets',
+        'coat': 'Jackets',
+        'blazer': 'Jackets',
+        'dress': 'Dresses',
+        'shoe': 'Shoes',
+        'sneaker': 'Shoes',
+        'boot': 'Shoes',
+        'accessory': 'Accessories',
+        'belt': 'Accessories',
+        'tie': 'Accessories'
+      };
+      
+      // Use the first detected item to populate fields
+      const firstItem = scanResult.uncatalogedItems[0] || scanResult.catalogedItems[0];
+      if (firstItem) {
+        // Find matching category
+        let detectedCategory = '';
+        const itemType = (firstItem.type || '').toLowerCase();
+        for (const [key, value] of Object.entries(categoryMapping)) {
+          if (itemType.includes(key)) {
+            detectedCategory = value;
+            break;
+          }
+        }
+        
+        // Capitalize first letter of color
+        const detectedColor = scanResult.detectedColors?.[0] 
+          ? scanResult.detectedColors[0].charAt(0).toUpperCase() + scanResult.detectedColors[0].slice(1)
+          : '';
+        
+        setNewItem(prev => ({
+          ...prev,
+          name: firstItem.suggestedName || firstItem.name || prev.name,
+          category: detectedCategory || prev.category,
+          color: detectedColor || prev.color,
+          brand: firstItem.brands?.join(', ') || scanResult.detectedBrands?.join(', ') || prev.brand
+        }));
+      }
+      
+      setSuccess(`AI detected items! Please review and adjust.`);
+    } else {
+      setError('No clothing items detected in image. Please try another photo.');
     }
-  };
-
-  const handleCameraCapture = (capturedFile) => {
-    setUploadedImage(capturedFile);
-    setShowCamera(false);
-    // Simulate AI detection
-    simulateAIDetection();
-  };
-
-  const simulateAIDetection = () => {
-    setTimeout(() => {
-      setNewItem(prev => ({
-        ...prev,
-        name: prev.name || "Detected Item",
-        category: prev.category || "Shirts", 
-        color: prev.color || "Blue"
-      }));
-      setSuccess('AI detected item details! Please review and adjust as needed.');
-    }, 1500);
-  };
-
+  } catch (err) {
+    console.error('AI detection error:', err);
+    setError('AI detection failed. Please enter details manually.');
+  } finally {
+    setLoading(false);
+  }
+};
   const generateOutfitSuggestion = () => {
     const availableItems = wardrobeItems.filter(item => item.laundry_status === 'clean');
     if (availableItems.length >= 2) {
@@ -266,9 +320,9 @@ const addItem = async () => {
           {wardrobeItems.map(item => (
             <div key={item.id} className="bg-white rounded-lg shadow border overflow-hidden">
               <div className="h-48 bg-gray-100 flex items-center justify-center">
-                {item.image ? (
+{item.imageUrl ? (
                   <img 
-                    src={`http://localhost:3001${item.image}`} 
+                    src={`http://localhost:5001${item.imageUrl}`} 
                     alt={item.name}
                     className="w-full h-full object-cover"
                   />
@@ -547,9 +601,9 @@ const addItem = async () => {
                     return item ? (
                       <div key={item.id} className="flex-shrink-0">
                         <div className="w-20 h-24 bg-gray-100 rounded flex items-center justify-center">
-                          {item.image ? (
+{item.imageUrl ? (
                             <img 
-                              src={`http://localhost:3001${item.image}`} 
+                              src={`http://localhost:5001${item.imageUrl}`} 
                               alt={item.name}
                               className="w-full h-full object-cover rounded"
                             />
