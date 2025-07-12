@@ -278,94 +278,135 @@ const simpleColorDetection = (r, g, b) => {
 const rgbToColorName = (r, g, b) => {
   // Comprehensive color palette with clothing-relevant colors
   const colors = [
-    // Neutrals
+    // Neutrals - More accurate grays and blacks
     { name: 'black', rgb: [0, 0, 0] },
-    { name: 'white', rgb: [255, 255, 255] },
-    { name: 'gray', rgb: [128, 128, 128] },
+    { name: 'off-black', rgb: [25, 25, 25] },
+    { name: 'charcoal', rgb: [54, 69, 79] },
     { name: 'dark gray', rgb: [64, 64, 64] },
+    { name: 'gray', rgb: [128, 128, 128] },
+    { name: 'medium gray', rgb: [160, 160, 160] },
     { name: 'light gray', rgb: [211, 211, 211] },
     { name: 'silver', rgb: [192, 192, 192] },
-    { name: 'charcoal', rgb: [54, 69, 79] },
+    { name: 'off-white', rgb: [250, 250, 250] },
+    { name: 'white', rgb: [255, 255, 255] },
     
-    // Blues - Enhanced for better light blue detection
+    // Browns/Tans/Beiges - Expanded and more accurate
+    { name: 'cream', rgb: [255, 253, 208] },
+    { name: 'ivory', rgb: [255, 255, 240] },
+    { name: 'beige', rgb: [245, 245, 220] },
+    { name: 'light beige', rgb: [245, 232, 210] },
+    { name: 'sand', rgb: [244, 223, 187] },
+    { name: 'tan', rgb: [210, 180, 140] },
+    { name: 'light tan', rgb: [222, 196, 165] },
+    { name: 'khaki', rgb: [195, 176, 145] },
+    { name: 'dark khaki', rgb: [189, 183, 107] },
+    { name: 'taupe', rgb: [183, 173, 168] },
+    { name: 'camel', rgb: [193, 154, 107] },
+    { name: 'wheat', rgb: [245, 222, 179] },
+    { name: 'biscuit', rgb: [226, 196, 162] },
+    { name: 'light brown', rgb: [181, 134, 84] },
+    { name: 'brown', rgb: [150, 75, 0] },
+    { name: 'medium brown', rgb: [139, 90, 43] },
+    { name: 'dark brown', rgb: [101, 67, 33] },
+    { name: 'chocolate', rgb: [123, 63, 0] },
+    { name: 'coffee', rgb: [111, 78, 55] },
+    { name: 'espresso', rgb: [76, 57, 48] },
+    { name: 'cognac', rgb: [159, 69, 19] },
+    { name: 'chestnut', rgb: [149, 69, 53] },
+    { name: 'mahogany', rgb: [192, 64, 0] },
+    { name: 'rust', rgb: [183, 65, 14] },
+    { name: 'sienna', rgb: [160, 82, 45] },
+    { name: 'burnt sienna', rgb: [138, 54, 15] },
+    { name: 'saddle brown', rgb: [139, 69, 19] },
+    { name: 'mocha', rgb: [129, 97, 82] },
+    
+    // Blues - Enhanced navy and light blue detection
     { name: 'navy', rgb: [0, 0, 128] },
-    { name: 'blue', rgb: [0, 0, 255] },
-    { name: 'light blue', rgb: [173, 216, 230] },
-    { name: 'baby blue', rgb: [137, 207, 240] },
-    { name: 'baby blue', rgb: [152, 193, 217] }, // Alternative baby blue
-    { name: 'sky blue', rgb: [135, 206, 235] },
-    { name: 'powder blue', rgb: [176, 224, 230] },
-    { name: 'pale blue', rgb: [175, 238, 238] },
-    { name: 'ice blue', rgb: [175, 238, 238] },
-    { name: 'light blue', rgb: [190, 210, 230] }, // Another light blue variant
-    { name: 'steel blue', rgb: [70, 130, 180] },
-    { name: 'royal blue', rgb: [65, 105, 225] },
-    { name: 'cornflower blue', rgb: [100, 149, 237] },
+    { name: 'dark navy', rgb: [0, 0, 80] },
     { name: 'midnight blue', rgb: [25, 25, 112] },
-    { name: 'slate blue', rgb: [106, 90, 205] },
     { name: 'oxford blue', rgb: [0, 33, 71] },
+    { name: 'prussian blue', rgb: [0, 49, 83] },
+    { name: 'indigo', rgb: [75, 0, 130] },
+    { name: 'royal blue', rgb: [65, 105, 225] },
+    { name: 'cobalt blue', rgb: [0, 71, 171] },
+    { name: 'blue', rgb: [0, 0, 255] },
+    { name: 'medium blue', rgb: [0, 123, 255] },
+    { name: 'steel blue', rgb: [70, 130, 180] },
+    { name: 'slate blue', rgb: [106, 90, 205] },
+    { name: 'cornflower blue', rgb: [100, 149, 237] },
+    { name: 'sky blue', rgb: [135, 206, 235] },
+    { name: 'light blue', rgb: [173, 216, 230] },
+    { name: 'powder blue', rgb: [176, 224, 230] },
+    { name: 'baby blue', rgb: [137, 207, 240] },
+    { name: 'pale blue', rgb: [175, 238, 238] },
+    { name: 'ice blue', rgb: [197, 231, 240] },
+    { name: 'periwinkle', rgb: [204, 204, 255] },
+    { name: 'denim blue', rgb: [21, 96, 189] },
     { name: 'teal', rgb: [0, 128, 128] },
     { name: 'turquoise', rgb: [64, 224, 208] },
+    { name: 'aqua', rgb: [0, 255, 255] },
     
-    // Browns/Tans
-    { name: 'brown', rgb: [165, 42, 42] },
-    { name: 'dark brown', rgb: [101, 67, 33] },
-    { name: 'light brown', rgb: [181, 101, 29] },
-    { name: 'tan', rgb: [210, 180, 140] },
-    { name: 'beige', rgb: [245, 245, 220] },
-    { name: 'khaki', rgb: [240, 230, 140] },
-    { name: 'camel', rgb: [193, 154, 107] },
-    { name: 'chocolate', rgb: [210, 105, 30] },
-    { name: 'coffee', rgb: [111, 78, 55] },
-    { name: 'cognac', rgb: [159, 69, 19] },
-    { name: 'saddle brown', rgb: [139, 69, 19] },
-    { name: 'sienna', rgb: [160, 82, 45] },
-    { name: 'rust', rgb: [183, 65, 14] },
-    
-    // Reds
-    { name: 'red', rgb: [255, 0, 0] },
-    { name: 'dark red', rgb: [139, 0, 0] },
-    { name: 'crimson', rgb: [220, 20, 60] },
+    // Reds - Better burgundy/wine detection
     { name: 'burgundy', rgb: [128, 0, 32] },
-    { name: 'maroon', rgb: [128, 0, 0] },
     { name: 'wine', rgb: [114, 47, 55] },
+    { name: 'maroon', rgb: [128, 0, 0] },
+    { name: 'bordeaux', rgb: [76, 0, 28] },
+    { name: 'dark red', rgb: [139, 0, 0] },
     { name: 'brick red', rgb: [178, 34, 34] },
+    { name: 'crimson', rgb: [220, 20, 60] },
+    { name: 'red', rgb: [255, 0, 0] },
+    { name: 'scarlet', rgb: [255, 36, 0] },
+    { name: 'cherry red', rgb: [222, 49, 99] },
     
     // Greens
-    { name: 'green', rgb: [0, 128, 0] },
     { name: 'dark green', rgb: [0, 100, 0] },
     { name: 'forest green', rgb: [34, 139, 34] },
+    { name: 'hunter green', rgb: [53, 94, 59] },
+    { name: 'bottle green', rgb: [0, 106, 78] },
+    { name: 'emerald', rgb: [80, 200, 120] },
+    { name: 'green', rgb: [0, 128, 0] },
+    { name: 'kelly green', rgb: [76, 187, 23] },
     { name: 'olive', rgb: [128, 128, 0] },
     { name: 'olive green', rgb: [85, 107, 47] },
+    { name: 'army green', rgb: [75, 83, 32] },
     { name: 'sage', rgb: [157, 187, 123] },
     { name: 'mint green', rgb: [152, 251, 152] },
-    { name: 'hunter green', rgb: [53, 94, 59] },
+    { name: 'sea green', rgb: [46, 139, 87] },
     
     // Purples
-    { name: 'purple', rgb: [128, 0, 128] },
-    { name: 'dark purple', rgb: [75, 0, 130] },
-    { name: 'violet', rgb: [238, 130, 238] },
-    { name: 'lavender', rgb: [230, 230, 250] },
-    { name: 'plum', rgb: [221, 160, 221] },
     { name: 'eggplant', rgb: [97, 64, 81] },
+    { name: 'dark purple', rgb: [75, 0, 130] },
+    { name: 'purple', rgb: [128, 0, 128] },
+    { name: 'royal purple', rgb: [120, 81, 169] },
+    { name: 'violet', rgb: [238, 130, 238] },
+    { name: 'orchid', rgb: [218, 112, 214] },
+    { name: 'plum', rgb: [221, 160, 221] },
+    { name: 'mauve', rgb: [224, 176, 255] },
+    { name: 'lavender', rgb: [230, 230, 250] },
+    { name: 'lilac', rgb: [200, 162, 200] },
     
     // Pinks
-    { name: 'pink', rgb: [255, 192, 203] },
+    { name: 'raspberry', rgb: [227, 11, 93] },
     { name: 'hot pink', rgb: [255, 105, 180] },
+    { name: 'fuchsia', rgb: [255, 0, 255] },
+    { name: 'pink', rgb: [255, 192, 203] },
     { name: 'rose', rgb: [255, 228, 225] },
+    { name: 'dusty rose', rgb: [220, 152, 163] },
     { name: 'blush', rgb: [222, 93, 131] },
     { name: 'coral', rgb: [255, 127, 80] },
     { name: 'salmon', rgb: [250, 128, 114] },
+    { name: 'peach', rgb: [255, 218, 185] },
     
     // Yellows/Oranges
     { name: 'yellow', rgb: [255, 255, 0] },
+    { name: 'lemon', rgb: [255, 244, 79] },
     { name: 'gold', rgb: [255, 215, 0] },
     { name: 'mustard', rgb: [255, 219, 88] },
-    { name: 'cream', rgb: [255, 253, 208] },
-    { name: 'ivory', rgb: [255, 255, 240] },
+    { name: 'amber', rgb: [255, 191, 0] },
+    { name: 'honey', rgb: [251, 218, 117] },
     { name: 'orange', rgb: [255, 165, 0] },
     { name: 'burnt orange', rgb: [204, 85, 0] },
-    { name: 'peach', rgb: [255, 218, 185] },
+    { name: 'tangerine', rgb: [242, 133, 0] },
     { name: 'apricot', rgb: [251, 206, 177] }
   ];
 
@@ -376,16 +417,184 @@ const rgbToColorName = (r, g, b) => {
   const [h, s, l] = hsl;
   console.log(`   HSL: (${h.toFixed(1)}°, ${(s * 100).toFixed(1)}%, ${(l * 100).toFixed(1)}%)`);
   
-  // First, try perceptual color matching using weighted RGB distance
+  // Special case: Check for beige/tan/khaki colors first
+  // These colors have specific RGB characteristics
+  const isWarmNeutral = (r > g && g > b) && // Red > Green > Blue pattern
+                        (r - b < 100) && // Not too much difference
+                        (Math.abs(r - g) < 50); // Red and green are close
+  
+  if (isWarmNeutral && s < 0.35) {
+    // Warm neutrals (beige, tan, khaki, etc.)
+    if (l > 0.85) return 'cream';
+    if (l > 0.8) return 'beige';
+    if (l > 0.7) return 'light beige';
+    if (l > 0.6) return 'tan';
+    if (l > 0.5) return 'khaki';
+    if (l > 0.4) return 'camel';
+    return 'light brown';
+  }
+  
+  // Check for true browns (not reds)
+  const isBrown = (r > g && g > b) && // Brown pattern
+                  (r - g > 20) && // More red than green
+                  (g - b > 10) && // More green than blue
+                  (h >= 10 && h <= 40); // Orange-ish hue
+  
+  if (isBrown && s > 0.15) {
+    if (l < 0.2) return 'dark brown';
+    if (l < 0.3) return 'chocolate';
+    if (l < 0.4) return 'brown';
+    if (l < 0.5) return 'medium brown';
+    if (l < 0.6) return 'light brown';
+    return 'tan';
+  }
+  
+  // Check for olive green BEFORE grayscale detection
+  // Olive greens often have low saturation but specific hue range
+  if (h >= 50 && h <= 90 && s >= 0.03 && s <= 0.5) {
+    // This is likely an olive/khaki color family
+    if (l < 0.25) return 'dark olive';
+    if (l < 0.35) return 'olive green';
+    if (l < 0.45) return 'olive';
+    if (l < 0.55) return 'light olive';
+    if (s < 0.15) return 'khaki';
+    return 'olive';
+  }
+  
+  // Very low saturation = grayscale (but higher threshold to not catch olives)
+  if (s < 0.05) {  // Reduced from 0.1 to be more strict about grayscale
+    if (l < 0.15) return 'black';
+    if (l < 0.25) return 'off-black';
+    if (l < 0.35) return 'charcoal';
+    if (l < 0.45) return 'dark gray';
+    if (l < 0.55) return 'gray';
+    if (l < 0.65) return 'medium gray';
+    if (l < 0.75) return 'light gray';
+    if (l < 0.85) return 'silver';
+    if (l < 0.95) return 'off-white';
+    return 'white';
+  }
+  
+  // Navy detection - dark blues with low brightness
+  if (h >= 200 && h <= 250 && l < 0.3 && s > 0.5) {
+    if (l < 0.15) return 'midnight blue';
+    if (l < 0.25) return 'navy';
+    return 'dark navy';
+  }
+  
+  // Light blue detection
+  if (h >= 180 && h <= 240 && l > 0.5) {
+    if (l > 0.85 && s > 0.15) return 'ice blue';
+    if (l > 0.8 && s > 0.2) return 'baby blue';
+    if (l > 0.7 && s > 0.15) return 'powder blue';
+    if (l > 0.6 && s > 0.2) return 'light blue';
+    if (l > 0.5 && s > 0.3) return 'sky blue';
+  }
+  
+  // Color detection based on hue ranges
+  if (s > 0.1) {
+    // Reds (0-10, 350-360)
+    if ((h >= 0 && h < 10) || (h >= 350 && h <= 360)) {
+      if (s < 0.5 && l < 0.3) return 'maroon';
+      if (s < 0.6 && l < 0.4) return 'burgundy';
+      if (l > 0.8) return 'pink';
+      if (l > 0.6) return 'rose';
+      if (l < 0.5) return 'dark red';
+      return 'red';
+    }
+    
+    // Orange-browns (10-40)
+    if (h >= 10 && h < 40) {
+      if (s < 0.3) {
+        if (l < 0.4) return 'brown';
+        if (l < 0.6) return 'light brown';
+        return 'tan';
+      }
+      if (l > 0.7) return 'peach';
+      if (l > 0.5) return 'coral';
+      if (s > 0.7) return 'orange';
+      return 'burnt orange';
+    }
+    
+    // Yellows (40-70)
+    if (h >= 40 && h < 70) {
+      if (s < 0.3 && l > 0.6) return 'beige';
+      if (l > 0.8) return 'cream';
+      if (l > 0.6) return 'yellow';
+      if (s > 0.5) return 'gold';
+      return 'mustard';
+    }
+    
+    // Yellow-greens (70-90)
+    if (h >= 70 && h < 90) {
+      if (s < 0.2 && l > 0.5) return 'khaki';
+      if (s < 0.3 && l < 0.5) return 'olive';
+      if (l > 0.6) return 'lime';
+      return 'olive green';
+    }
+    
+    // Greens (90-150)
+    if (h >= 90 && h < 150) {
+      if (s < 0.3 && l > 0.5) return 'sage';
+      if (s < 0.4 && l < 0.4) return 'forest green';
+      if (l > 0.7) return 'mint green';
+      if (l < 0.3) return 'dark green';
+      if (l < 0.4) return 'forest green';
+      if (s > 0.6) return 'bright green';
+      return 'green';
+    }
+    
+    // Cyan/Teal (150-180)
+    if (h >= 150 && h < 180) {
+      if (l > 0.6) return 'aqua';
+      if (l > 0.4) return 'turquoise';
+      return 'teal';
+    }
+    
+    // Blues (180-240)
+    if (h >= 180 && h < 240) {
+      if (l > 0.8) return 'baby blue';
+      if (l > 0.6) return 'light blue';
+      if (l > 0.4) return 'blue';
+      if (l > 0.2) return 'navy';
+      return 'midnight blue';
+    }
+    
+    // Blue-purples (240-270)
+    if (h >= 240 && h < 270) {
+      if (l > 0.7) return 'periwinkle';
+      if (l > 0.5) return 'slate blue';
+      if (s > 0.5) return 'indigo';
+      return 'dark purple';
+    }
+    
+    // Purples (270-300)
+    if (h >= 270 && h < 300) {
+      if (l > 0.8) return 'lavender';
+      if (l > 0.6) return 'violet';
+      if (l > 0.4) return 'purple';
+      return 'dark purple';
+    }
+    
+    // Red-purples (300-350)
+    if (h >= 300 && h < 350) {
+      if (l > 0.7) return 'pink';
+      if (l > 0.5) return 'hot pink';
+      if (s < 0.5 && l < 0.4) return 'wine';
+      return 'magenta';
+    }
+  }
+  
+  // Fallback to closest color match using improved distance calculation
   let closestColor = colors[0];
   let minDistance = Infinity;
 
   colors.forEach(color => {
-    // Weighted RGB distance that considers human perception
+    // Use CIE76 color difference formula for better perceptual accuracy
     const distance = Math.sqrt(
-      Math.pow((r - color.rgb[0]) * 0.3, 2) +  // Red weight
-      Math.pow((g - color.rgb[1]) * 0.59, 2) + // Green weight (highest)
-      Math.pow((b - color.rgb[2]) * 0.11, 2)   // Blue weight
+      Math.pow((r - color.rgb[0]) * 2, 2) +
+      Math.pow((g - color.rgb[1]) * 4, 2) +
+      Math.pow((b - color.rgb[2]) * 3, 2)
     );
     
     if (distance < minDistance) {
@@ -396,75 +605,8 @@ const rgbToColorName = (r, g, b) => {
 
   console.log(`   Closest match: ${closestColor.name} (distance: ${minDistance.toFixed(2)})`);
   
-  // HSL-based color detection for better accuracy
-  const brightness = l;
-  const saturation = s;
-  const hue = h;
-  
-  // Very low saturation = grayscale
-  if (saturation < 0.15) {
-    if (brightness < 0.3) {
-      return 'black';
-    } else if (brightness < 0.4) {
-      return 'charcoal';
-    } else if (brightness < 0.5) {
-      return 'dark gray';
-    } else if (brightness < 0.7) {
-      return 'gray';
-    } else if (brightness < 0.9) {
-      return 'light gray';
-    } else {
-      return 'white';
-    }
-  }
-  
-  // Special handling for light blue suits and clothing
-  if (hue >= 180 && hue <= 240 && brightness > 0.5) {
-    if (brightness > 0.8 && saturation > 0.2) return 'baby blue';
-    if (brightness > 0.7 && saturation > 0.15) return 'light blue';
-    if (brightness > 0.6 && saturation > 0.2) return 'powder blue';
-    if (brightness > 0.5 && saturation > 0.3) return 'sky blue';
-  }
-  
-  // High saturation colors - use hue-based detection
-  if (saturation > 0.3) {
-    if (hue >= 0 && hue < 15) return brightness > 0.7 ? 'pink' : 'red';
-    if (hue >= 15 && hue < 45) return brightness > 0.7 ? 'peach' : 'orange';
-    if (hue >= 45 && hue < 75) return brightness > 0.7 ? 'cream' : 'yellow';
-    if (hue >= 75 && hue < 105) return brightness > 0.7 ? 'mint green' : 'green';
-    if (hue >= 105 && hue < 135) return brightness > 0.7 ? 'sage' : 'green';
-    if (hue >= 135 && hue < 165) return 'teal';
-    if (hue >= 165 && hue < 190) return brightness > 0.7 ? 'sky blue' : 'blue';
-    if (hue >= 190 && hue < 225) {
-      if (brightness > 0.8) return 'powder blue';
-      if (brightness > 0.6) return 'light blue';
-      if (brightness > 0.4) return 'blue';
-      return 'navy';
-    }
-    if (hue >= 225 && hue < 255) {
-      if (brightness > 0.8) return 'baby blue';
-      if (brightness > 0.6) return 'light blue';
-      if (brightness > 0.4) return 'blue';
-      return 'navy';
-    }
-    if (hue >= 255 && hue < 285) return brightness > 0.7 ? 'lavender' : 'purple';
-    if (hue >= 285 && hue < 315) return brightness > 0.7 ? 'plum' : 'purple';
-    if (hue >= 315 && hue < 345) return brightness > 0.7 ? 'rose' : 'burgundy';
-    if (hue >= 345 && hue <= 360) return brightness > 0.7 ? 'pink' : 'red';
-  }
-  
-  // Medium saturation - muted colors
-  if (saturation > 0.15 && saturation <= 0.3) {
-    if (hue >= 0 && hue < 60) return brightness > 0.5 ? 'tan' : 'brown';
-    if (hue >= 60 && hue < 120) return brightness > 0.5 ? 'khaki' : 'olive';
-    if (hue >= 120 && hue < 180) return brightness > 0.5 ? 'sage' : 'olive green';
-    if (hue >= 180 && hue < 240) return brightness > 0.5 ? 'steel blue' : 'navy';
-    if (hue >= 240 && hue < 300) return brightness > 0.5 ? 'slate blue' : 'dark purple';
-    if (hue >= 300 && hue <= 360) return brightness > 0.5 ? 'wine' : 'maroon';
-  }
-
-  // Fallback to closest color match
-  return minDistance < 100 ? closestColor.name : 'unknown';
+  // Only return closest match if it's really close
+  return minDistance < 50 ? closestColor.name : 'unknown';
 };
 
 // Helper function to merge similar detected items (especially shoes)
@@ -588,7 +730,20 @@ const createCombinedCroppedImage = (imageBuffer, boundingBoxes, itemName) => {
         }
       });
       
-      // Ensure valid bounds with safety margins
+      // Add padding for combined crops
+      const PADDING_PERCENT = 0.1; // 10% padding
+      const boxWidth = maxX - minX;
+      const boxHeight = maxY - minY;
+      const xPadding = boxWidth * PADDING_PERCENT;
+      const yPadding = boxHeight * PADDING_PERCENT;
+      
+      // Apply padding to the bounds
+      minX = Math.max(0, minX - xPadding);
+      minY = Math.max(0, minY - yPadding);
+      maxX = Math.min(width - 1, maxX + xPadding);
+      maxY = Math.min(height - 1, maxY + yPadding);
+      
+      // Calculate final crop bounds
       const left = Math.max(0, Math.floor(minX));
       const top = Math.max(0, Math.floor(minY));
       const right = Math.min(width - 1, Math.ceil(maxX));
@@ -598,6 +753,7 @@ const createCombinedCroppedImage = (imageBuffer, boundingBoxes, itemName) => {
       const cropHeight = Math.max(1, bottom - top);
       
       console.log(`   📐 Combined crop area: left=${left}, top=${top}, width=${cropWidth}, height=${cropHeight}`);
+      console.log(`      Applied ${PADDING_PERCENT * 100}% padding to combined box`);
       
       if (cropWidth <= 0 || cropHeight <= 0 || left + cropWidth > width || top + cropHeight > height) {
         console.error(`   ❌ Invalid crop dimensions: ${cropWidth}x${cropHeight} at (${left},${top}) for image ${width}x${height}`);
@@ -663,14 +819,24 @@ const createCroppedImage = (imageBuffer, boundingBox, itemName) => {
       console.log(`      Normalized coords: X[${Math.min(...vertices.map(v => v.x || 0)).toFixed(3)}-${Math.max(...vertices.map(v => v.x || 0)).toFixed(3)}], Y[${Math.min(...vertices.map(v => v.y || 0)).toFixed(3)}-${Math.max(...vertices.map(v => v.y || 0)).toFixed(3)}]`);
       console.log(`      Pixel coords: X[${Math.floor(Math.min(...xCoords))}-${Math.ceil(Math.max(...xCoords))}], Y[${Math.floor(Math.min(...yCoords))}-${Math.ceil(Math.max(...yCoords))}]`);
       
-      // Calculate bounds with safety checks
-      const left = Math.max(0, Math.floor(Math.min(...xCoords)));
-      const top = Math.max(0, Math.floor(Math.min(...yCoords)));
-      const right = Math.min(width - 1, Math.ceil(Math.max(...xCoords)));
-      const bottom = Math.min(height - 1, Math.ceil(Math.max(...yCoords)));
+      // Add padding to the bounding box to ensure we capture the full item
+      // This helps when Vision API detection is too tight
+      const PADDING_PERCENT = 0.1; // 10% padding on each side
+      const boxWidth = Math.max(...xCoords) - Math.min(...xCoords);
+      const boxHeight = Math.max(...yCoords) - Math.min(...yCoords);
+      const xPadding = boxWidth * PADDING_PERCENT;
+      const yPadding = boxHeight * PADDING_PERCENT;
+      
+      // Calculate bounds with padding and safety checks
+      const left = Math.max(0, Math.floor(Math.min(...xCoords) - xPadding));
+      const top = Math.max(0, Math.floor(Math.min(...yCoords) - yPadding));
+      const right = Math.min(width - 1, Math.ceil(Math.max(...xCoords) + xPadding));
+      const bottom = Math.min(height - 1, Math.ceil(Math.max(...yCoords) + yPadding));
       
       const cropWidth = Math.max(1, right - left);
       const cropHeight = Math.max(1, bottom - top);
+      
+      console.log(`      Applied ${PADDING_PERCENT * 100}% padding - Final crop: left=${left}, top=${top}, width=${cropWidth}, height=${cropHeight}`);
       
       console.log(`   📐 Crop area: left=${left}, top=${top}, width=${cropWidth}, height=${cropHeight}`);
       
@@ -735,21 +901,41 @@ const analyzeImageWithVision = async (imageData) => {
       image: { content: imageBuffer }
     });
 
+    // Try web detection for better clothing recognition
+    const [webResult] = await visionClient.webDetection({
+      image: { content: imageBuffer }
+    });
+
     const detectedItems = [];
     const colors = [];
     const clothingTerms = [
       'shirt', 'pants', 'dress', 'jacket', 'shoe', 'tie', 'hat', 'sock', 
       'suit', 'jeans', 'sweater', 'coat', 'blazer', 'skirt', 'blouse',
       'trouser', 'sneaker', 'boot', 'sandal', 'heel', 'belt', 'scarf',
-      'vest', 'cardigan', 'hoodie', 'polo', 't-shirt', 'tank top'
+      'vest', 'cardigan', 'hoodie', 'polo', 't-shirt', 'tank top',
+      'shorts', 'leggings', 'sweatpants', 'sweatshirt', 'footwear',
+      'clothing', 'apparel', 'garment', 'outfit', 'top', 'bottom',
+      'crop top', 'turtleneck', 'collar', 'sleeve', 'pocket'
     ];
     
     console.log('🔍 Processing detected objects first...');
     
     // Extract actual colors from Vision API FIRST
     console.log('🎨 Extracting colors from Vision API...');
-    console.log('🔍 Properties result:', JSON.stringify(propertiesResult, null, 2));
+    // Don't log entire properties result as it's too verbose
     const detectedColors = [];
+    
+    // Track all detections for debugging summary
+    const debugSummary = {
+      totalObjectsDetected: 0,
+      objectsAccepted: [],
+      objectsRejected: [],
+      objectsFiltered: [],
+      labelsDetected: [],
+      webEntitiesDetected: [],
+      colorsDetected: [],
+      finalItemsCount: 0
+    };
     
     // Check multiple possible response structures from Vision API
     let dominantColors = null;
@@ -776,10 +962,10 @@ const analyzeImageWithVision = async (imageData) => {
         
         console.log(`   🎨 Color ${index + 1}: RGB(${r}, ${g}, ${b}) = ${colorName} (${(pixelFraction * 100).toFixed(1)}%)`);
         
-        // Additional debug for blue colors
-        if (b > 100 || colorName.includes('blue')) {
-          const [h, s, l] = rgbToHsl(r, g, b);
-          console.log(`      🔍 Blue analysis: HSL(${h.toFixed(1)}°, ${(s*100).toFixed(1)}%, ${(l*100).toFixed(1)}%)`);
+        // Additional debug for olive/green colors or low saturation colors
+        const [h, s, l] = rgbToHsl(r, g, b);
+        if ((h >= 50 && h <= 150) || s < 0.1 || colorName.includes('olive') || colorName.includes('green')) {
+          console.log(`      🔍 Color analysis: HSL(${h.toFixed(1)}°, ${(s*100).toFixed(1)}%, ${(l*100).toFixed(1)}%)`);
         }
         
         // Only add valid color names
@@ -797,54 +983,203 @@ const analyzeImageWithVision = async (imageData) => {
       console.log('   Available keys in propertiesResult:', Object.keys(propertiesResult));
     }
     
+    // Helper function to calculate IoU (Intersection over Union) for bounding boxes
+    // This helps detect overlapping items to prevent duplicates
+    const calculateIoU = (box1, box2) => {
+      if (!box1 || !box2 || box1.length < 4 || box2.length < 4) return 0;
+      
+      // Get min/max coordinates for each box
+      const getMinMax = (vertices) => {
+        const xs = vertices.map(v => v.x || 0);
+        const ys = vertices.map(v => v.y || 0);
+        return {
+          minX: Math.min(...xs),
+          maxX: Math.max(...xs),
+          minY: Math.min(...ys),
+          maxY: Math.max(...ys)
+        };
+      };
+      
+      const bounds1 = getMinMax(box1);
+      const bounds2 = getMinMax(box2);
+      
+      // Calculate intersection
+      const xOverlap = Math.max(0, Math.min(bounds1.maxX, bounds2.maxX) - Math.max(bounds1.minX, bounds2.minX));
+      const yOverlap = Math.max(0, Math.min(bounds1.maxY, bounds2.maxY) - Math.max(bounds1.minY, bounds2.minY));
+      const intersectionArea = xOverlap * yOverlap;
+      
+      // Calculate union
+      const area1 = (bounds1.maxX - bounds1.minX) * (bounds1.maxY - bounds1.minY);
+      const area2 = (bounds2.maxX - bounds2.minX) * (bounds2.maxY - bounds2.minY);
+      const unionArea = area1 + area2 - intersectionArea;
+      
+      return unionArea > 0 ? intersectionArea / unionArea : 0;
+    };
+
     // Process detected objects AFTER color detection
     if (objectResult.localizedObjectAnnotations) {
-      console.log('Raw object detections:', 
-        objectResult.localizedObjectAnnotations.map(obj => ({
-          name: obj.name,
-          score: obj.score
-        }))
-      );
+      debugSummary.totalObjectsDetected = objectResult.localizedObjectAnnotations.length;
+      console.log(`\n📦 OBJECT DETECTION RESULTS: ${debugSummary.totalObjectsDetected} objects found`);
+      console.log('══════════════════════════════════════════════════════════════');
       
-      // Process each detected object
+      objectResult.localizedObjectAnnotations.forEach((obj, idx) => {
+        const bbox = obj.boundingPoly?.normalizedVertices;
+        console.log(`\n  [${idx + 1}] Object: "${obj.name}" (Confidence: ${(obj.score * 100).toFixed(1)}%)`);
+        if (bbox && bbox.length >= 4) {
+          console.log(`      📍 Bounding Box:`);
+          console.log(`         Top-Left:     (${(bbox[0]?.x || 0).toFixed(3)}, ${(bbox[0]?.y || 0).toFixed(3)})`);
+          console.log(`         Top-Right:    (${(bbox[1]?.x || 0).toFixed(3)}, ${(bbox[1]?.y || 0).toFixed(3)})`);
+          console.log(`         Bottom-Right: (${(bbox[2]?.x || 0).toFixed(3)}, ${(bbox[2]?.y || 0).toFixed(3)})`);
+          console.log(`         Bottom-Left:  (${(bbox[3]?.x || 0).toFixed(3)}, ${(bbox[3]?.y || 0).toFixed(3)})`);
+          console.log(`         Width:  ${((bbox[1]?.x - bbox[0]?.x) || 0).toFixed(3)}`);
+          console.log(`         Height: ${((bbox[2]?.y - bbox[0]?.y) || 0).toFixed(3)}`);
+        } else {
+          console.log(`      ⚠️  No bounding box data`);
+        }
+      });
+      console.log('\n══════════════════════════════════════════════════════════════');
+      
+      // Filter and process objects with confidence threshold
+      const MIN_CONFIDENCE = 0.4; // 40% minimum confidence (lowered to catch more items)
+      const IOU_THRESHOLD = 0.3; // 30% overlap threshold for considering duplicates
+      
+      const candidateItems = [];
+      
+      // First, collect all valid clothing items with sufficient confidence
       objectResult.localizedObjectAnnotations.forEach(obj => {
         const objectName = obj.name.toLowerCase();
-        if (clothingTerms.some(term => objectName.includes(term) || term.includes(objectName))) {
-          detectedItems.push({
+        const isClothingItem = clothingTerms.some(term => 
+          objectName.includes(term) || term.includes(objectName) ||
+          // Also check for partial matches
+          (term.includes(' ') && term.split(' ').some(part => objectName.includes(part)))
+        );
+        
+        if (obj.score >= MIN_CONFIDENCE && isClothingItem) {
+          console.log(`\n   ✅ ACCEPTED: "${obj.name}" (${(obj.score * 100).toFixed(1)}%)`);
+          console.log(`      Reason: Matches clothing terms and confidence >= ${(MIN_CONFIDENCE * 100).toFixed(0)}%`);
+          debugSummary.objectsAccepted.push(`${obj.name} (${(obj.score * 100).toFixed(1)}%)`);
+          candidateItems.push({
             type: objectName,
             confidence: Math.round(obj.score * 100),
             boundingBox: obj.boundingPoly.normalizedVertices,
-            source: 'object_detection'
+            source: 'object_detection',
+            score: obj.score
           });
+        } else if (isClothingItem) {
+          console.log(`\n   ❌ REJECTED: "${obj.name}" (${(obj.score * 100).toFixed(1)}%)`);
+          console.log(`      Reason: Confidence below ${(MIN_CONFIDENCE * 100).toFixed(0)}% threshold`);
+          debugSummary.objectsRejected.push(`${obj.name} (${(obj.score * 100).toFixed(1)}%) - low confidence`);
+        } else if (obj.score >= MIN_CONFIDENCE) {
+          console.log(`\n   ❌ REJECTED: "${obj.name}" (${(obj.score * 100).toFixed(1)}%)`);
+          console.log(`      Reason: Not a clothing item`);
+          debugSummary.objectsRejected.push(`${obj.name} (${(obj.score * 100).toFixed(1)}%) - not clothing`);
         }
       });
+      
+      // Sort by confidence score (highest first)
+      candidateItems.sort((a, b) => b.score - a.score);
+      
+      // Remove duplicates based on bounding box overlap
+      const filteredItems = [];
+      candidateItems.forEach(item => {
+        let isDuplicate = false;
+        
+        // Check if this item overlaps significantly with any already accepted item
+        for (const acceptedItem of filteredItems) {
+          // Check if same type or similar type
+          const sameType = item.type === acceptedItem.type || 
+                          (item.type.includes(acceptedItem.type) || acceptedItem.type.includes(item.type));
+          
+          if (sameType && item.boundingBox && acceptedItem.boundingBox) {
+            const iou = calculateIoU(item.boundingBox, acceptedItem.boundingBox);
+            if (iou > IOU_THRESHOLD) {
+              isDuplicate = true;
+              console.log(`\n   🔄 FILTERED DUPLICATE: "${item.type}" (${item.confidence}%)`);
+              console.log(`      Overlaps with: "${acceptedItem.type}" (${acceptedItem.confidence}%)`);
+              console.log(`      IoU (Intersection over Union): ${(iou * 100).toFixed(1)}%`);
+              debugSummary.objectsFiltered.push(`${item.type} overlaps ${acceptedItem.type} (IoU: ${(iou * 100).toFixed(1)}%)`);
+              break;
+            }
+          }
+        }
+        
+        if (!isDuplicate) {
+          filteredItems.push(item);
+        }
+      });
+      
+      // Add filtered items to detectedItems
+      filteredItems.forEach(item => {
+        delete item.score; // Remove temporary score field
+        detectedItems.push(item);
+      });
+      
+      console.log(`\n📊 OBJECT FILTERING SUMMARY:`);
+      console.log(`   Total candidates: ${candidateItems.length}`);
+      console.log(`   After duplicate removal: ${filteredItems.length}`);
+      console.log(`   Duplicates filtered: ${candidateItems.length - filteredItems.length}`);
     }
 
     // Log raw label results
     if (labelResult.labelAnnotations) {
-      console.log('Raw labels detected:', 
-        labelResult.labelAnnotations.slice(0, 10).map(label => ({
-          description: label.description,
-          score: label.score
-        }))
-      );
+      console.log(`\n🏷️  LABEL DETECTION RESULTS: ${labelResult.labelAnnotations.length} labels found`);
+      console.log('══════════════════════════════════════════════════════════════');
+      labelResult.labelAnnotations.slice(0, 15).forEach((label, idx) => {
+        console.log(`  [${idx + 1}] "${label.description}" (${(label.score * 100).toFixed(1)}%)`);
+        debugSummary.labelsDetected.push(`${label.description} (${(label.score * 100).toFixed(1)}%)`);
+      });
+      if (labelResult.labelAnnotations.length > 15) {
+        console.log(`  ... and ${labelResult.labelAnnotations.length - 15} more labels`);
+      }
     }
 
     // If no objects detected, try to infer from labels
     if (detectedItems.length === 0 && labelResult.labelAnnotations) {
+      console.log(`\n⚠️  No objects detected via object localization, falling back to labels...`);
       const clothingLabels = labelResult.labelAnnotations.filter(label => {
         const description = label.description.toLowerCase();
         return clothingTerms.some(term => description.includes(term)) ||
-               ['clothing', 'apparel', 'fashion', 'garment', 'outfit'].some(term => description.includes(term));
+               ['clothing', 'apparel', 'fashion', 'garment', 'outfit', 'collar', 'formal wear', 'blazer', 'suit trousers'].some(term => description.includes(term));
       });
 
+      console.log(`   Found ${clothingLabels.length} clothing-related labels`);
       clothingLabels.slice(0, 5).forEach(label => {
+        console.log(`   ➕ Adding from label: "${label.description}" (${(label.score * 100).toFixed(1)}%)`);
+        // For label-based detection without bounding boxes, we'll use the full image
+        // but flag it so the UI knows this is a full-image detection
         detectedItems.push({
           type: label.description.toLowerCase(),
           confidence: Math.round(label.score * 100),
           boundingBox: null,
-          source: 'label_detection'
+          source: 'label_detection',
+          useFullImage: true
         });
+      });
+    }
+
+    // Use web detection to improve clothing item detection
+    if (webResult.webEntities && webResult.webEntities.length > 0) {
+      console.log(`\n🌐 WEB DETECTION RESULTS: ${webResult.webEntities.length} entities found`);
+      console.log('══════════════════════════════════════════════════════════════');
+      webResult.webEntities.slice(0, 10).forEach((entity, idx) => {
+        if (entity.description && entity.score > 0.5) {
+          const desc = entity.description.toLowerCase();
+          console.log(`  [${idx + 1}] "${entity.description}" (${(entity.score * 100).toFixed(1)}%)`);
+          debugSummary.webEntitiesDetected.push(`${entity.description} (${(entity.score * 100).toFixed(1)}%)`);
+          
+          // Check if this is a clothing item we haven't detected
+          const isClothing = clothingTerms.some(term => desc.includes(term));
+          if (isClothing && !detectedItems.some(item => item.type === desc)) {
+            detectedItems.push({
+              type: desc,
+              confidence: Math.round(entity.score * 100),
+              boundingBox: null,
+              source: 'web_detection',
+              useFullImage: true
+            });
+            console.log(`   ➕ Added clothing item from web: "${desc}"`);
+          }
+        }
       });
     }
 
@@ -860,7 +1195,8 @@ const analyzeImageWithVision = async (imageData) => {
       });
     }
 
-    console.log('🎯 Final detected colors:', detectedColors);
+    console.log('\n🎯 Final detected colors:', detectedColors);
+    debugSummary.colorsDetected = detectedColors;
     
     // If no colors detected, add a warning and try to extract from labels
     if (detectedColors.length === 0) {
@@ -881,6 +1217,32 @@ const analyzeImageWithVision = async (imageData) => {
         });
       }
     }
+    
+    // Final debugging summary
+    debugSummary.finalItemsCount = detectedItems.length;
+    console.log(`\n\n📋 VISION API ANALYSIS SUMMARY`);
+    console.log('══════════════════════════════════════════════════════════════');
+    console.log(`🔍 Total objects detected: ${debugSummary.totalObjectsDetected}`);
+    console.log(`✅ Objects accepted: ${debugSummary.objectsAccepted.length}`);
+    if (debugSummary.objectsAccepted.length > 0) {
+      debugSummary.objectsAccepted.forEach(item => console.log(`   - ${item}`));
+    }
+    console.log(`❌ Objects rejected: ${debugSummary.objectsRejected.length}`);
+    if (debugSummary.objectsRejected.length > 0) {
+      debugSummary.objectsRejected.forEach(item => console.log(`   - ${item}`));
+    }
+    console.log(`🔄 Objects filtered (duplicates): ${debugSummary.objectsFiltered.length}`);
+    if (debugSummary.objectsFiltered.length > 0) {
+      debugSummary.objectsFiltered.forEach(item => console.log(`   - ${item}`));
+    }
+    console.log(`🏷️  Labels detected: ${debugSummary.labelsDetected.length}`);
+    console.log(`🌐 Web entities detected: ${debugSummary.webEntitiesDetected.length}`);
+    console.log(`🎨 Colors detected: ${debugSummary.colorsDetected.length}`);
+    if (debugSummary.colorsDetected.length > 0) {
+      console.log(`   Colors: ${debugSummary.colorsDetected.join(', ')}`);
+    }
+    console.log(`\n📦 FINAL RESULT: ${debugSummary.finalItemsCount} clothing items`);
+    console.log('══════════════════════════════════════════════════════════════\n');
 
     return { detectedItems, brands, colors: detectedColors };
   } catch (error) {
@@ -1205,6 +1567,8 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
     }
 
     console.log(`📷 Received image: ${req.file.filename} (${req.file.size} bytes)`);
+    console.log('📝 Request body:', req.body);
+    console.log('📝 userId from body:', req.body.userId);
 
     const wardrobeItems = req.body.wardrobeItems ? JSON.parse(req.body.wardrobeItems) : [];
     const userId = req.body.userId || '7eb88885-3bc3-4c09-af20-7fbd0bf6fa07';
@@ -1219,10 +1583,25 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
     // Analyze the outfit image
     const { detectedItems, brands, colors } = await analyzeImageWithVision(`data:image/jpeg;base64,${base64Image}`);
     
-    console.log('Raw Vision API results:');
-    console.log(`Detected ${detectedItems.length} items:`, detectedItems);
-    console.log('Detected brands:', brands);
-    console.log('Detected colors:', colors);
+    console.log('\n🔍 ANALYZE OUTFIT - VISION API RESULTS');
+    console.log('══════════════════════════════════════════════════════════════');
+    console.log(`🎯 Total items detected: ${detectedItems.length}`);
+    console.log(`🔖 Brands detected: ${brands.length > 0 ? brands.join(', ') : 'None'}`);
+    console.log(`🎨 Colors detected: ${colors.length > 0 ? colors.join(', ') : 'None'}`);
+    
+    console.log('\n📦 Detailed item breakdown:');
+    detectedItems.forEach((item, idx) => {
+      console.log(`\n  [${idx + 1}] ${item.type.toUpperCase()}`);
+      console.log(`      Confidence: ${item.confidence}%`);
+      console.log(`      Source: ${item.source}`);
+      if (item.boundingBox) {
+        const bbox = item.boundingBox;
+        console.log(`      Bounding Box: YES`);
+        console.log(`         Coordinates: [${bbox[0]?.x?.toFixed(3)},${bbox[0]?.y?.toFixed(3)}] to [${bbox[2]?.x?.toFixed(3)},${bbox[2]?.y?.toFixed(3)}]`);
+      } else {
+        console.log(`      Bounding Box: NO (will use full image)`);
+      }
+    });
 
     // Process detected items and create proper item objects
     const processedItems = detectedItems.map((item, index) => {
@@ -1262,14 +1641,19 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
           // For now, use the first detected color from Vision API
           // In a more sophisticated implementation, we could analyze the specific region
           primaryColor = colors[index % colors.length] || colors[0];
-          console.log(`   Assigning color "${primaryColor}" to ${item.type} (index ${index})`);
+          console.log(`\n  🎨 COLOR ASSIGNMENT for ${item.type}:`);
+          console.log(`     Assigned color: "${primaryColor}" (from detected color ${(index % colors.length) + 1}/${colors.length})`);
+          console.log(`     Method: Using bounding box region`);
         } else {
           // If no bounding box, distribute colors across items
           primaryColor = colors[index % colors.length];
-          console.log(`   Assigning color "${primaryColor}" to ${item.type} (no bounding box)`);
+          console.log(`\n  🎨 COLOR ASSIGNMENT for ${item.type}:`);
+          console.log(`     Assigned color: "${primaryColor}" (from detected color ${(index % colors.length) + 1}/${colors.length})`);
+          console.log(`     Method: Distributed assignment (no bounding box)`);
         }
       } else {
-        console.log(`   ⚠️  No colors available for ${item.type}, will use fallback`);
+        console.log(`\n  ⚠️  COLOR ASSIGNMENT for ${item.type}:`);
+        console.log(`     No colors detected by Vision API, will use fallback`);
       }
       
       // Fallback color palettes if Vision API didn't detect colors well
@@ -1291,7 +1675,8 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
         };
         
         primaryColor = itemColorDefaults[itemType] || 'gray';
-        console.log(`   Using fallback color "${primaryColor}" for ${item.type}`);
+        console.log(`     Fallback color: "${primaryColor}"`);
+        console.log(`     Reason: Vision API returned no/unknown color`);
       }
       
       // Create item name
@@ -1314,8 +1699,322 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
       };
     });
 
+    // Helper function to analyze shirt color from visible areas when blazer/coat is detected
+    const analyzeShirtColorFromVisibleAreas = async (imageBuffer, blazerBoundingBox, globalDetectedColors) => {
+      try {
+        const sharp = require('sharp');
+        
+        // Get image metadata
+        const metadata = await sharp(imageBuffer).metadata();
+        const { width, height } = metadata;
+        
+        if (!blazerBoundingBox || blazerBoundingBox.length < 4) {
+          return null;
+        }
+        
+        // Convert normalized coordinates to pixel coordinates
+        const blazerXCoords = blazerBoundingBox.map(v => (v.x || 0) * width);
+        const blazerYCoords = blazerBoundingBox.map(v => (v.y || 0) * height);
+        
+        const blazerTop = Math.min(...blazerYCoords);
+        const blazerBottom = Math.max(...blazerYCoords);
+        const blazerLeft = Math.min(...blazerXCoords);
+        const blazerRight = Math.max(...blazerXCoords);
+        const blazerWidth = blazerRight - blazerLeft;
+        
+        // Define regions where shirt might be visible
+        const regions = [];
+        
+        // 1. Collar/neck area (above blazer top)
+        if (blazerTop > height * 0.1) { // Only if there's space above
+          regions.push({
+            left: Math.max(0, Math.floor(blazerLeft + blazerWidth * 0.3)),
+            top: Math.max(0, Math.floor(blazerTop - height * 0.05)),
+            width: Math.floor(blazerWidth * 0.4),
+            height: Math.floor(height * 0.05),
+            name: 'collar'
+          });
+        }
+        
+        // 2. Chest area (center of blazer, where shirt might show)
+        regions.push({
+          left: Math.max(0, Math.floor(blazerLeft + blazerWidth * 0.4)),
+          top: Math.max(0, Math.floor(blazerTop + (blazerBottom - blazerTop) * 0.2)),
+          width: Math.floor(blazerWidth * 0.2),
+          height: Math.floor((blazerBottom - blazerTop) * 0.3),
+          name: 'chest'
+        });
+        
+        // 3. Cuff areas (if arms visible at bottom sides)
+        if (blazerBottom < height * 0.9) {
+          // Left cuff
+          regions.push({
+            left: Math.max(0, Math.floor(blazerLeft)),
+            top: Math.max(0, Math.floor(blazerBottom - height * 0.05)),
+            width: Math.floor(blazerWidth * 0.15),
+            height: Math.floor(height * 0.1),
+            name: 'left_cuff'
+          });
+          
+          // Right cuff
+          regions.push({
+            left: Math.max(0, Math.floor(blazerRight - blazerWidth * 0.15)),
+            top: Math.max(0, Math.floor(blazerBottom - height * 0.05)),
+            width: Math.floor(blazerWidth * 0.15),
+            height: Math.floor(height * 0.1),
+            name: 'right_cuff'
+          });
+        }
+        
+        // Analyze colors in each region
+        const colorCounts = {};
+        
+        for (const region of regions) {
+          try {
+            // Ensure region is within image bounds
+            region.width = Math.min(region.width, width - region.left);
+            region.height = Math.min(region.height, height - region.top);
+            
+            if (region.width <= 0 || region.height <= 0) continue;
+            
+            console.log(`    Analyzing ${region.name} region: ${region.width}x${region.height} at (${region.left}, ${region.top})`);
+            
+            // Extract and analyze the region
+            const regionBuffer = await sharp(imageBuffer)
+              .extract(region)
+              .raw()
+              .toBuffer({ resolveWithObject: true });
+            
+            const { data, info } = regionBuffer;
+            const pixelCount = info.width * info.height;
+            
+            // Sample pixels to determine dominant colors
+            const sampledColors = {};
+            const sampleRate = Math.max(1, Math.floor(pixelCount / 100)); // Sample ~100 pixels
+            
+            for (let i = 0; i < data.length; i += info.channels * sampleRate) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              
+              // Convert to color name
+              const colorName = rgbToColorName(r, g, b);
+              
+              // Filter out non-shirt colors (skin tones, very dark colors, etc.)
+              if (colorName && 
+                  colorName !== 'unknown' && 
+                  !colorName.includes('black') && 
+                  !colorName.includes('dark') &&
+                  !colorName.includes('brown') &&
+                  !colorName.includes('tan') &&
+                  !colorName.includes('beige')) {
+                sampledColors[colorName] = (sampledColors[colorName] || 0) + 1;
+              }
+            }
+            
+            // Add sampled colors to overall count
+            Object.entries(sampledColors).forEach(([color, count]) => {
+              colorCounts[color] = (colorCounts[color] || 0) + count;
+            });
+            
+          } catch (regionError) {
+            console.log(`    Warning: Could not analyze ${region.name} region:`, regionError.message);
+          }
+        }
+        
+        // Find the most common shirt color
+        let mostCommonColor = null;
+        let maxCount = 0;
+        
+        Object.entries(colorCounts).forEach(([color, count]) => {
+          console.log(`    Color candidate: ${color} (${count} samples)`);
+          if (count > maxCount) {
+            maxCount = count;
+            mostCommonColor = color;
+          }
+        });
+        
+        // If no color detected from regions, check global detected colors for shirt-like colors
+        if (!mostCommonColor && globalDetectedColors && globalDetectedColors.length > 0) {
+          const shirtLikeColors = globalDetectedColors.filter(color => 
+            color && 
+            (color.includes('white') || 
+             color.includes('blue') || 
+             color.includes('pink') || 
+             color.includes('gray') || 
+             color.includes('grey') ||
+             color.includes('lavender') ||
+             color.includes('cream'))
+          );
+          
+          if (shirtLikeColors.length > 0) {
+            mostCommonColor = shirtLikeColors[0];
+            console.log(`    Using global detected color: ${mostCommonColor}`);
+          }
+        }
+        
+        return mostCommonColor;
+        
+      } catch (error) {
+        console.log('    Error in analyzeShirtColorFromVisibleAreas:', error.message);
+        return null;
+      }
+    };
+    
+    // Helper function to analyze shirt color around tie
+    const analyzeShirtColorAroundTie = async (imageBuffer, tieBoundingBox, globalDetectedColors) => {
+      try {
+        const sharp = require('sharp');
+        
+        // Get image metadata
+        const metadata = await sharp(imageBuffer).metadata();
+        const { width, height } = metadata;
+        
+        if (!tieBoundingBox || tieBoundingBox.length < 4) {
+          return null;
+        }
+        
+        // Convert normalized coordinates to pixel coordinates
+        const tieXCoords = tieBoundingBox.map(v => (v.x || 0) * width);
+        const tieYCoords = tieBoundingBox.map(v => (v.y || 0) * height);
+        
+        const tieTop = Math.min(...tieYCoords);
+        const tieBottom = Math.max(...tieYCoords);
+        const tieLeft = Math.min(...tieXCoords);
+        const tieRight = Math.max(...tieXCoords);
+        const tieWidth = tieRight - tieLeft;
+        const tieHeight = tieBottom - tieTop;
+        
+        // Define regions around the tie where shirt is visible
+        const regions = [];
+        
+        // 1. Left side of tie
+        regions.push({
+          left: Math.max(0, Math.floor(tieLeft - tieWidth * 0.5)),
+          top: Math.max(0, Math.floor(tieTop)),
+          width: Math.floor(tieWidth * 0.4),
+          height: Math.floor(tieHeight * 0.5),
+          name: 'left_side'
+        });
+        
+        // 2. Right side of tie
+        regions.push({
+          left: Math.max(0, Math.floor(tieRight + tieWidth * 0.1)),
+          top: Math.max(0, Math.floor(tieTop)),
+          width: Math.floor(tieWidth * 0.4),
+          height: Math.floor(tieHeight * 0.5),
+          name: 'right_side'
+        });
+        
+        // 3. Above tie (collar area)
+        if (tieTop > height * 0.1) {
+          regions.push({
+            left: Math.max(0, Math.floor(tieLeft - tieWidth * 0.2)),
+            top: Math.max(0, Math.floor(tieTop - height * 0.05)),
+            width: Math.floor(tieWidth * 1.4),
+            height: Math.floor(height * 0.05),
+            name: 'collar'
+          });
+        }
+        
+        // Analyze colors in each region
+        const colorCounts = {};
+        
+        for (const region of regions) {
+          try {
+            // Ensure region is within image bounds
+            region.width = Math.min(region.width, width - region.left);
+            region.height = Math.min(region.height, height - region.top);
+            
+            if (region.width <= 0 || region.height <= 0) continue;
+            
+            console.log(`    Analyzing ${region.name} region around tie: ${region.width}x${region.height} at (${region.left}, ${region.top})`);
+            
+            // Extract and analyze the region
+            const regionBuffer = await sharp(imageBuffer)
+              .extract(region)
+              .raw()
+              .toBuffer({ resolveWithObject: true });
+            
+            const { data, info } = regionBuffer;
+            const pixelCount = info.width * info.height;
+            
+            // Sample pixels to determine dominant colors
+            const sampledColors = {};
+            const sampleRate = Math.max(1, Math.floor(pixelCount / 50)); // Sample ~50 pixels
+            
+            for (let i = 0; i < data.length; i += info.channels * sampleRate) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              
+              // Convert to color name
+              const colorName = rgbToColorName(r, g, b);
+              
+              // Filter out non-shirt colors
+              if (colorName && 
+                  colorName !== 'unknown' && 
+                  !colorName.includes('black') && 
+                  !colorName.includes('dark') &&
+                  !colorName.includes('brown') &&
+                  !colorName.includes('tan') &&
+                  !colorName.includes('beige')) {
+                sampledColors[colorName] = (sampledColors[colorName] || 0) + 1;
+              }
+            }
+            
+            // Add sampled colors to overall count
+            Object.entries(sampledColors).forEach(([color, count]) => {
+              colorCounts[color] = (colorCounts[color] || 0) + count;
+            });
+            
+          } catch (regionError) {
+            console.log(`    Warning: Could not analyze ${region.name} region:`, regionError.message);
+          }
+        }
+        
+        // Find the most common shirt color
+        let mostCommonColor = null;
+        let maxCount = 0;
+        
+        Object.entries(colorCounts).forEach(([color, count]) => {
+          console.log(`    Color candidate: ${color} (${count} samples)`);
+          if (count > maxCount) {
+            maxCount = count;
+            mostCommonColor = color;
+          }
+        });
+        
+        // If no color detected from regions, check global detected colors
+        if (!mostCommonColor && globalDetectedColors && globalDetectedColors.length > 0) {
+          const shirtLikeColors = globalDetectedColors.filter(color => 
+            color && 
+            (color.includes('white') || 
+             color.includes('blue') || 
+             color.includes('pink') || 
+             color.includes('gray') || 
+             color.includes('grey') ||
+             color.includes('lavender') ||
+             color.includes('cream'))
+          );
+          
+          if (shirtLikeColors.length > 0) {
+            mostCommonColor = shirtLikeColors[0];
+            console.log(`    Using global detected color: ${mostCommonColor}`);
+          }
+        }
+        
+        return mostCommonColor;
+        
+      } catch (error) {
+        console.log('    Error in analyzeShirtColorAroundTie:', error.message);
+        return null;
+      }
+    };
+
     // Infer complementary items (like dress shirt with suit)
-    console.log('🔍 Checking for complementary items...');
+    console.log('\n🔍 COMPLEMENTARY ITEM DETECTION');
+    console.log('══════════════════════════════════════════════════════════════');
     const complementaryItems = [];
     
     // Check if we have a suit/blazer but no shirt
@@ -1323,15 +2022,64 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
       ['suit', 'blazer', 'jacket', 'coat'].includes(item.type.toLowerCase())
     );
     const hasShirt = processedItems.some(item => 
-      ['shirt', 'blouse', 't-shirt', 'dress shirt'].includes(item.type.toLowerCase())
+      ['shirt', 'blouse', 't-shirt', 'dress shirt', 'crop top', 'tank top', 'turtleneck'].includes(item.type.toLowerCase())
     );
     
-    if (hasSuitOrBlazer && !hasShirt) {
-      console.log('   👔 Detected suit/blazer without shirt - inferring dress shirt');
+    // Also check labels for shirt detection
+    const hasShirtInLabels = detectedItems.some(item => 
+      item.source === 'label_detection' && 
+      ['shirt', 'dress shirt', 'collar'].some(term => item.type.toLowerCase().includes(term))
+    );
+    
+    // Check if we have a tie
+    const hasTie = processedItems.some(item => 
+      item.type.toLowerCase() === 'tie'
+    );
+    
+    console.log(`  Suit/Blazer detected: ${hasSuitOrBlazer}`);
+    console.log(`  Shirt detected: ${hasShirt}`);
+    console.log(`  Shirt in labels: ${hasShirtInLabels}`);
+    console.log(`  Tie detected: ${hasTie}`);
+    
+    // Don't infer a shirt if we already detected one in labels
+    if (hasSuitOrBlazer && !hasShirt && !hasShirtInLabels) {
+      console.log('\n  → INFERENCE: Adding dress shirt (suit/blazer without shirt)');
+      
+      // Try to detect shirt color from visible areas
+      let shirtColor = 'white'; // Default fallback
+      
+      try {
+        // Find the blazer/coat item to get its bounding box
+        const blazerItem = processedItems.find(item => 
+          ['suit', 'blazer', 'jacket', 'coat'].includes(item.type.toLowerCase())
+        );
+        
+        if (blazerItem && blazerItem.boundingBox && imageBuffer) {
+          console.log('  → Analyzing visible shirt areas for color detection...');
+          
+          // Analyze specific regions where shirt might be visible
+          const detectedShirtColor = await analyzeShirtColorFromVisibleAreas(
+            imageBuffer, 
+            blazerItem.boundingBox,
+            colors || []
+          );
+          
+          if (detectedShirtColor) {
+            shirtColor = detectedShirtColor;
+            console.log(`  → Detected shirt color: ${shirtColor}`);
+          } else {
+            console.log('  → No clear shirt color detected, using default: white');
+          }
+        }
+      } catch (error) {
+        console.log('  → Error detecting shirt color:', error.message);
+        console.log('  → Using default color: white');
+      }
+      
       complementaryItems.push({
-        name: 'White Dress Shirt',
+        name: `${shirtColor.charAt(0).toUpperCase() + shirtColor.slice(1)} Dress Shirt`,
         category: 'Shirts',
-        color: 'white',
+        color: shirtColor,
         type: 'dress shirt',
         confidence: 0.85, // High confidence as this is a common pairing
         boundingBox: null, // No specific bounding box
@@ -1343,17 +2091,44 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
       });
     }
     
-    // Check if we have a tie but no shirt (another indicator)
-    const hasTie = processedItems.some(item => 
-      item.type.toLowerCase() === 'tie'
-    );
-    
     if (hasTie && !hasShirt && complementaryItems.length === 0) {
-      console.log('   👔 Detected tie without shirt - inferring dress shirt');
+      console.log('\n  → INFERENCE: Adding dress shirt (tie without shirt)');
+      
+      // Try to detect shirt color from visible areas around tie
+      let shirtColor = 'white'; // Default fallback
+      
+      try {
+        // Find the tie item to get its bounding box
+        const tieItem = processedItems.find(item => 
+          item.type.toLowerCase() === 'tie'
+        );
+        
+        if (tieItem && tieItem.boundingBox && imageBuffer) {
+          console.log('  → Analyzing visible shirt areas around tie for color detection...');
+          
+          // Analyze regions around the tie where shirt might be visible
+          const detectedShirtColor = await analyzeShirtColorAroundTie(
+            imageBuffer, 
+            tieItem.boundingBox,
+            colors || []
+          );
+          
+          if (detectedShirtColor) {
+            shirtColor = detectedShirtColor;
+            console.log(`  → Detected shirt color: ${shirtColor}`);
+          } else {
+            console.log('  → No clear shirt color detected, using default: white');
+          }
+        }
+      } catch (error) {
+        console.log('  → Error detecting shirt color:', error.message);
+        console.log('  → Using default color: white');
+      }
+      
       complementaryItems.push({
-        name: 'White Dress Shirt',
+        name: `${shirtColor.charAt(0).toUpperCase() + shirtColor.slice(1)} Dress Shirt`,
         category: 'Shirts', 
-        color: 'white',
+        color: shirtColor,
         type: 'dress shirt',
         confidence: 0.90, // Very high confidence with tie
         boundingBox: null,
@@ -1367,12 +2142,16 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
     
     // Add complementary items to processed items
     const allItems = [...processedItems, ...complementaryItems];
-    console.log(`Added ${complementaryItems.length} inferred items`);
+    console.log(`\n  Total inferred items: ${complementaryItems.length}`);
+    console.log(`  Total items after inference: ${allItems.length}`);
 
     // Merge similar detected items (especially shoes) before matching with wardrobe
-    console.log('🔗 Merging similar detected items...');
+    console.log('\n🔗 ITEM MERGING PROCESS');
+    console.log('══════════════════════════════════════════════════════════════');
+    console.log(`  Items before merge: ${allItems.length}`);
     const mergedItems = mergeDetectedItems(allItems);
-    console.log(`Merged ${allItems.length} items down to ${mergedItems.length} items`);
+    console.log(`  Items after merge: ${mergedItems.length}`);
+    console.log(`  Items merged: ${allItems.length - mergedItems.length}`);
 
     // Check against existing wardrobe items first
     const matchedItems = matchItemsWithWardrobe(mergedItems, wardrobeItems);
@@ -1394,11 +2173,28 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
             `${item.type}_${i}`
           );
         } else if (item.boundingBox && item.boundingBox.length >= 4) {
-          croppedUrl = await createCroppedImage(
-            imageBuffer, 
-            item.boundingBox, 
-            `${item.type}_${i}`
+          // Validate bounding box before cropping
+          const isValidBox = item.boundingBox.every(vertex => 
+            vertex.hasOwnProperty('x') && vertex.hasOwnProperty('y') &&
+            vertex.x >= 0 && vertex.x <= 1 && vertex.y >= 0 && vertex.y <= 1
           );
+          
+          if (isValidBox) {
+            croppedUrl = await createCroppedImage(
+              imageBuffer, 
+              item.boundingBox, 
+              `${item.type}_${i}`
+            );
+          } else {
+            console.log(`   ⚠️  Invalid bounding box for ${item.type}, skipping crop`);
+            croppedUrl = null;
+          }
+        } else if (item.useFullImage) {
+          console.log(`   📷  Using full image for ${item.type} (label-based detection)`);
+          croppedUrl = null; // Will use full image in frontend
+        } else {
+          console.log(`   ⚠️  No bounding box available for ${item.type}`);
+          croppedUrl = null;
         }
         
         if (croppedUrl) {
@@ -1421,10 +2217,16 @@ app.post('/api/analyze-outfit', upload.single('outfitImage'), async (req, res) =
 
     // DON'T automatically save - just return the detected items for user review
     // The frontend will call a separate endpoint to save after user confirmation
-    console.log('📋 Returning detected items for user review (not saving yet)');
+    console.log('\n📋 FINAL PROCESSING SUMMARY');
+    console.log('══════════════════════════════════════════════════════════════');
+    console.log(`  Status: Returning items for user review (not saving)`);
+    console.log(`  Total matched items: ${matchedItems.length}`);
+    console.log(`  New items: ${matchedItems.filter(item => item.status === 'new').length}`);
+    console.log(`  Existing items: ${matchedItems.filter(item => item.status === 'existing').length}`);
     
     // Generate a suggested outfit name for the frontend to use
     const suggestedOutfitName = generateOutfitName(matchedItems);
+    console.log(`  Suggested outfit name: "${suggestedOutfitName}"`);
 
     // Store the uploaded image path temporarily for later saving
     const tempImagePath = req.file.path;

@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Camera, Plus, Eye, Shirt, Calendar, Cloud, Users, ShoppingBag, Search, Filter, Star, MapPin, Thermometer, AlertCircle, CheckCircle, Upload, X } from 'lucide-react';
 import api from './services/api';
 import CameraCapture from './components/CameraCapture';
+import OutfitScanner from './components/OutfitScanner.js';
+import SplashScreen from './components/SplashScreen';
 
 const ClosetMonkeyMVP = () => {
   const [currentView, setCurrentView] = useState('home');
@@ -10,6 +12,13 @@ const ClosetMonkeyMVP = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  const [selectedOutfits, setSelectedOutfits] = useState(new Set());
+  const [showItemDetailModal, setShowItemDetailModal] = useState(false);
+  const [selectedItemForDetail, setSelectedItemForDetail] = useState(null);
+  const [showSplashScreen, setShowSplashScreen] = useState(true);
+  const [isIdle, setIsIdle] = useState(false);
+  const idleTimerRef = useRef(null);
   
   const [newItem, setNewItem] = useState({
     name: '',
@@ -32,7 +41,7 @@ const ClosetMonkeyMVP = () => {
   // Load data on component mount
   useEffect(() => {
     loadWardrobeItems();
-    // TODO: Load outfits when outfit API is ready
+    loadOutfits();
   }, []);
 
   // Clear messages after 3 seconds
@@ -46,6 +55,46 @@ const ClosetMonkeyMVP = () => {
     }
   }, [error, success]);
 
+  // Idle detection and activity monitoring
+  useEffect(() => {
+    const resetIdleTimer = () => {
+      if (isIdle) {
+        setIsIdle(false);
+      }
+      
+      // Clear existing timer
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
+      
+      // Set new timer for 5 minutes of inactivity
+      idleTimerRef.current = setTimeout(() => {
+        setIsIdle(true);
+      }, 5 * 60 * 1000); // 5 minutes
+    };
+
+    // Events to track for user activity
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    // Add event listeners
+    events.forEach(event => {
+      document.addEventListener(event, resetIdleTimer, true);
+    });
+
+    // Initialize timer
+    resetIdleTimer();
+
+    // Cleanup
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, resetIdleTimer, true);
+      });
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
+    };
+  }, [isIdle]);
+
   const loadWardrobeItems = async () => {
     try {
       setLoading(true);
@@ -56,6 +105,21 @@ const ClosetMonkeyMVP = () => {
       console.error('Error loading wardrobe items:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadOutfits = async () => {
+    try {
+      const userId = localStorage.getItem('userId') || '7eb88885-3bc3-4c09-af20-7fbd0bf6fa07';
+      const response = await fetch(`/api/outfits/${userId}`);
+      if (response.ok) {
+        const outfitsData = await response.json();
+        setOutfits(outfitsData);
+      } else {
+        console.error('Failed to load outfits');
+      }
+    } catch (err) {
+      console.error('Error loading outfits:', err);
     }
   };
 const addItem = async () => {
@@ -111,6 +175,128 @@ const addItem = async () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const deleteOutfit = async (outfitId) => {
+    if (!window.confirm('Are you sure you want to delete this outfit?')) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/outfits/${outfitId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setOutfits(outfits.filter(outfit => outfit.id !== outfitId));
+        setSuccess('Outfit deleted successfully!');
+      } else {
+        throw new Error('Failed to delete outfit');
+      }
+    } catch (err) {
+      setError('Failed to delete outfit');
+      console.error('Error deleting outfit:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleItemSelection = (itemId) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(itemId)) {
+      newSelected.delete(itemId);
+    } else {
+      newSelected.add(itemId);
+    }
+    setSelectedItems(newSelected);
+  };
+
+  const selectAllItems = () => {
+    setSelectedItems(new Set(wardrobeItems.map(item => item.id)));
+  };
+
+  const clearSelection = () => {
+    setSelectedItems(new Set());
+  };
+
+  const deleteSelectedItems = async () => {
+    if (selectedItems.size === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to delete ${selectedItems.size} selected item(s)?`)) return;
+
+    try {
+      setLoading(true);
+      const deletePromises = Array.from(selectedItems).map(itemId => 
+        api.deleteItem(itemId)
+      );
+      
+      await Promise.all(deletePromises);
+      
+      setWardrobeItems(wardrobeItems.filter(item => !selectedItems.has(item.id)));
+      setSelectedItems(new Set());
+      setSuccess(`Successfully deleted ${selectedItems.size} items!`);
+    } catch (err) {
+      setError('Failed to delete selected items');
+      console.error('Error deleting items:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Outfit selection helper functions
+  const toggleOutfitSelection = (outfitId) => {
+    const newSelected = new Set(selectedOutfits);
+    if (newSelected.has(outfitId)) {
+      newSelected.delete(outfitId);
+    } else {
+      newSelected.add(outfitId);
+    }
+    setSelectedOutfits(newSelected);
+  };
+
+  const selectAllOutfits = () => {
+    setSelectedOutfits(new Set(outfits.map(outfit => outfit.id)));
+  };
+
+  const clearOutfitSelection = () => {
+    setSelectedOutfits(new Set());
+  };
+
+  const deleteSelectedOutfits = async () => {
+    if (selectedOutfits.size === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to delete ${selectedOutfits.size} selected outfit(s)?`)) return;
+
+    try {
+      setLoading(true);
+      const deletePromises = Array.from(selectedOutfits).map(outfitId => 
+        fetch(`/api/outfits/${outfitId}`, { method: 'DELETE' })
+      );
+      
+      const responses = await Promise.all(deletePromises);
+      const allSuccessful = responses.every(response => response.ok);
+      
+      if (allSuccessful) {
+        setOutfits(outfits.filter(outfit => !selectedOutfits.has(outfit.id)));
+        setSelectedOutfits(new Set());
+        setSuccess(`Successfully deleted ${selectedOutfits.size} outfits!`);
+      } else {
+        throw new Error('Some outfits failed to delete');
+      }
+    } catch (err) {
+      setError('Failed to delete selected outfits');
+      console.error('Error deleting outfits:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Splash screen handlers
+  const handleSplashComplete = () => {
+    setShowSplashScreen(false);
+  };
+
+  const handleWakeFromIdle = () => {
+    setIsIdle(false);
   };
 
 const handleImageUpload = (event) => {
@@ -213,6 +399,49 @@ const performAIDetection = async (imageFile) => {
     }
   };
 
+  // Open item detail modal for editing
+  const openItemDetail = (item) => {
+    setSelectedItemForDetail(item);
+    setShowItemDetailModal(true);
+  };
+
+  // Update item details
+  const updateItemDetails = async (updatedItem) => {
+    try {
+      setLoading(true);
+      
+      // Call API to update the item
+      const response = await fetch(`/api/wardrobe/items/${updatedItem.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: updatedItem.name,
+          color: updatedItem.color,
+          type: updatedItem.category,
+          brand: updatedItem.brand,
+          material: updatedItem.material,
+          size: updatedItem.size,
+          description: updatedItem.description
+        }),
+      });
+
+      if (response.ok) {
+        // Refresh the wardrobe items
+        await loadWardrobeItems();
+        setShowItemDetailModal(false);
+        setSuccess('Item updated successfully!');
+      } else {
+        setError('Failed to update item');
+      }
+    } catch (err) {
+      setError('Failed to update item');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const MessageBar = () => {
     if (!error && !success) return null;
     
@@ -296,21 +525,52 @@ const performAIDetection = async (imageFile) => {
         </button>
       </div>
       
-      <div className="flex space-x-4 mb-6">
-        <div className="flex items-center space-x-2">
-          <Search className="h-4 w-4 text-gray-400" />
-          <input 
-            type="text" 
-            placeholder="Search items..." 
-            className="border rounded-lg px-3 py-2 w-64"
-          />
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex space-x-4">
+          <div className="flex items-center space-x-2">
+            <Search className="h-4 w-4 text-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Search items..." 
+              className="border rounded-lg px-3 py-2 w-64"
+            />
+          </div>
+          <select className="border rounded-lg px-3 py-2">
+            <option>All Categories</option>
+            {categories.map(cat => (
+              <option key={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
-        <select className="border rounded-lg px-3 py-2">
-          <option>All Categories</option>
-          {categories.map(cat => (
-            <option key={cat}>{cat}</option>
-          ))}
-        </select>
+        
+        {/* Bulk actions */}
+        <div className="flex items-center space-x-3">
+          {selectedItems.size > 0 && (
+            <>
+              <span className="text-sm text-gray-600">
+                {selectedItems.size} selected
+              </span>
+              <button
+                onClick={deleteSelectedItems}
+                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+              >
+                Delete Selected
+              </button>
+              <button
+                onClick={clearSelection}
+                className="border border-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-50"
+              >
+                Clear
+              </button>
+            </>
+          )}
+          <button
+            onClick={selectedItems.size === wardrobeItems.length ? clearSelection : selectAllItems}
+            className="border border-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-50"
+          >
+            {selectedItems.size === wardrobeItems.length ? 'Deselect All' : 'Select All'}
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -318,11 +578,26 @@ const performAIDetection = async (imageFile) => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {wardrobeItems.map(item => (
-            <div key={item.id} className="bg-white rounded-lg shadow border overflow-hidden">
+            <div 
+              key={item.id} 
+              className={`bg-white rounded-lg shadow border overflow-hidden relative ${
+                selectedItems.has(item.id) ? 'ring-2 ring-blue-500' : ''
+              }`}
+            >
+              {/* Selection checkbox */}
+              <div className="absolute top-2 left-2 z-10">
+                <input
+                  type="checkbox"
+                  checked={selectedItems.has(item.id)}
+                  onChange={() => toggleItemSelection(item.id)}
+                  className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
+                />
+              </div>
+
               <div className="h-48 bg-gray-100 flex items-center justify-center">
-{item.imageUrl ? (
+                {item.imageUrl ? (
                   <img 
-                    src={`http://localhost:5001${item.imageUrl}`} 
+                    src={`http://localhost:5001${item.imageUrl}?t=${Date.now()}`} 
                     alt={item.name}
                     className="w-full h-full object-cover"
                   />
@@ -333,7 +608,7 @@ const performAIDetection = async (imageFile) => {
               <div className="p-4">
                 <h3 className="font-semibold truncate">{item.name}</h3>
                 <p className="text-sm text-gray-600">{item.brand}</p>
-                <p className="text-sm text-gray-500">{item.category} • {item.color}</p>
+                <p className="text-sm text-gray-500">{item.type} • {item.color}</p>
                 <div className="flex justify-between items-center mt-3">
                   <span className={`px-2 py-1 rounded-full text-xs ${
                     item.laundry_status === 'clean' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
@@ -344,6 +619,12 @@ const performAIDetection = async (imageFile) => {
                     {item.rfid_tag && (
                       <span className="text-xs text-gray-400">RFID: {item.rfid_tag}</span>
                     )}
+                    <button
+                      onClick={() => openItemDetail(item)}
+                      className="text-blue-500 hover:text-blue-700 text-xs mr-2"
+                    >
+                      Edit
+                    </button>
                     <button
                       onClick={() => deleteItem(item.id)}
                       className="text-red-500 hover:text-red-700 text-xs"
@@ -563,6 +844,48 @@ const performAIDetection = async (imageFile) => {
           <span>Get AI Suggestion</span>
         </button>
       </div>
+      
+      {/* Bulk actions for outfits */}
+      {outfits.length > 0 && (
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <Search className="h-4 w-4 text-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Search outfits..." 
+              className="border rounded-lg px-3 py-2 w-64"
+            />
+          </div>
+          
+          <div className="flex items-center space-x-3">
+            {selectedOutfits.size > 0 && (
+              <>
+                <span className="text-sm text-gray-600">
+                  {selectedOutfits.size} selected
+                </span>
+                <button
+                  onClick={deleteSelectedOutfits}
+                  className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                >
+                  Delete Selected
+                </button>
+                <button
+                  onClick={clearOutfitSelection}
+                  className="border border-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-50"
+                >
+                  Clear
+                </button>
+              </>
+            )}
+            <button
+              onClick={selectedOutfits.size === outfits.length ? clearOutfitSelection : selectAllOutfits}
+              className="border border-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-50"
+            >
+              {selectedOutfits.size === outfits.length ? 'Deselect All' : 'Select All'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <LoadingSpinner />
@@ -583,38 +906,135 @@ const performAIDetection = async (imageFile) => {
             </div>
           ) : (
             outfits.map(outfit => (
-              <div key={outfit.id} className="bg-white p-6 rounded-lg shadow border">
-                <div className="flex justify-between items-start mb-4">
+              <div key={outfit.id} className={`bg-white p-6 rounded-lg shadow border relative ${
+                selectedOutfits.has(outfit.id) ? 'ring-2 ring-purple-500' : ''
+              }`}>
+                {/* Selection checkbox */}
+                <div className="absolute top-4 left-4 z-10">
+                  <input
+                    type="checkbox"
+                    checked={selectedOutfits.has(outfit.id)}
+                    onChange={() => toggleOutfitSelection(outfit.id)}
+                    className="w-4 h-4 text-purple-600 bg-white border-gray-300 rounded focus:ring-purple-500"
+                  />
+                </div>
+                
+                <div className="flex justify-between items-start mb-4 ml-8">
                   <div>
                     <h3 className="font-semibold text-lg">{outfit.name}</h3>
                     <p className="text-gray-600">Created on {outfit.date}</p>
                   </div>
-                  <div className="text-right text-sm text-gray-500">
-                    <p className="flex items-center"><Thermometer className="h-4 w-4 mr-1" />{outfit.weather}</p>
-                    <p className="flex items-center"><MapPin className="h-4 w-4 mr-1" />{outfit.occasion}</p>
+                  <div className="flex items-start space-x-4">
+                    <div className="text-right text-sm text-gray-500">
+                      <p className="flex items-center"><Thermometer className="h-4 w-4 mr-1" />{outfit.weather}</p>
+                      <p className="flex items-center"><MapPin className="h-4 w-4 mr-1" />{outfit.occasion}</p>
+                    </div>
+                    <button
+                      onClick={() => deleteOutfit(outfit.id)}
+                      className="text-red-500 hover:text-red-700 p-1"
+                      title="Delete outfit"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
                 
-                <div className="flex space-x-4">
-                  {outfit.items.map(itemId => {
-                    const item = wardrobeItems.find(i => i.id === itemId);
-                    return item ? (
-                      <div key={item.id} className="flex-shrink-0">
-                        <div className="w-20 h-24 bg-gray-100 rounded flex items-center justify-center">
-{item.imageUrl ? (
-                            <img 
-                              src={`http://localhost:5001${item.imageUrl}`} 
-                              alt={item.name}
-                              className="w-full h-full object-cover rounded"
-                            />
-                          ) : (
-                            <Shirt className="h-8 w-8 text-gray-400" />
-                          )}
-                        </div>
-                        <p className="text-xs text-center mt-1 truncate w-20">{item.name}</p>
-                      </div>
-                    ) : null;
-                  })}
+                <div className="flex space-x-6">
+                  {/* Components section */}
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Components</h4>
+                    <div className="flex flex-wrap gap-3">
+                      {outfit.items && outfit.items.length > 0 ? (
+                        outfit.items.map((itemId, index) => {
+                          const item = wardrobeItems.find(i => i.id === itemId);
+                          return item ? (
+                            <div key={item.id} className="flex-shrink-0 relative group">
+                              <div className="w-20 h-24 bg-gray-100 rounded flex items-center justify-center cursor-pointer" onClick={() => openItemDetail(item)}>
+                                {item.imageUrl ? (
+                                  <img 
+                                    src={`http://localhost:5001${item.imageUrl}?t=${Date.now()}`} 
+                                    alt={item.name}
+                                    className="w-full h-full object-cover rounded"
+                                  />
+                                ) : (
+                                  <Shirt className="h-8 w-8 text-gray-400" />
+                                )}
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openItemDetail(item);
+                                }}
+                                className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-50"
+                                title="Edit item"
+                              >
+                                <svg className="h-3 w-3 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                              </button>
+                              <p className="text-xs text-center mt-1 truncate w-20">{item.name}</p>
+                            </div>
+                          ) : null;
+                        })
+                      ) : outfit.itemNames && outfit.itemNames.length > 0 ? (
+                        outfit.itemNames.map((itemName, index) => {
+                          // Try to find the item by name in the wardrobe for editing
+                          const item = wardrobeItems.find(i => i.name.toLowerCase() === itemName.toLowerCase());
+                          return (
+                            <div key={`${outfit.id}-${index}`} className="flex-shrink-0 relative group">
+                              <div 
+                                className={`w-20 h-24 bg-gray-100 rounded flex items-center justify-center ${item ? 'cursor-pointer' : ''}`}
+                                onClick={item ? () => openItemDetail(item) : undefined}
+                              >
+                                {outfit.itemImageUrls && outfit.itemImageUrls[index] ? (
+                                  <img 
+                                    src={`http://localhost:5001${outfit.itemImageUrls[index]}?t=${Date.now()}`} 
+                                    alt={itemName}
+                                    className="w-full h-full object-cover rounded"
+                                  />
+                                ) : (
+                                  <Shirt className="h-8 w-8 text-gray-400" />
+                                )}
+                              </div>
+                              {item && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openItemDetail(item);
+                                  }}
+                                  className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-50"
+                                  title="Edit item"
+                                >
+                                  <svg className="h-3 w-3 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                </button>
+                              )}
+                              <p className="text-xs text-center mt-1 truncate w-20">{itemName}</p>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <p className="text-gray-500 text-sm">No items found</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Full outfit section */}
+                  <div className="flex-shrink-0">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Complete Outfit</h4>
+                    <div className="w-32 h-40 bg-gray-100 rounded flex items-center justify-center">
+                      {outfit.imageUrl ? (
+                        <img 
+                          src={`http://localhost:5001${outfit.imageUrl}?t=${Date.now()}`} 
+                          alt={outfit.name}
+                          className="w-full h-full object-cover rounded"
+                        />
+                      ) : (
+                        <Eye className="h-12 w-12 text-gray-400" />
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))
@@ -624,13 +1044,282 @@ const performAIDetection = async (imageFile) => {
     </div>
   );
 
+  // Handler for adding detected items from outfit scanner
+  const handleAddDetectedItems = async (detectedItems) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const promises = detectedItems.map(item => 
+        api.addItem({
+          name: item.name,
+          category: item.category,
+          color: item.color,
+          brand: item.brand || '',
+          type: item.type || '',
+          description: `Detected from outfit scan with ${Math.round(item.confidence * 100)}% confidence`,
+          laundryStatus: 'clean'
+        })
+      );
+      
+      const results = await Promise.all(promises);
+      
+      // Update wardrobe items with new items
+      const newItems = results.map(result => result.item || result);
+      setWardrobeItems(prev => [...prev, ...newItems]);
+      
+      setSuccess(`Successfully added ${detectedItems.length} items to your wardrobe!`);
+      
+    } catch (error) {
+      console.error('Error adding detected items:', error);
+      setError('Failed to add detected items to wardrobe');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Outfit Scanner View
+  const OutfitScannerView = () => (
+    <OutfitScanner 
+      wardrobeItems={wardrobeItems}
+      onAddDetectedItems={handleAddDetectedItems}
+      onOutfitSaved={() => {
+        loadOutfits();
+        setSuccess('Outfit saved successfully!');
+      }}
+      onWardrobeUpdated={loadWardrobeItems}
+    />
+  );
+
   const navigationItems = [
     { id: 'home', label: 'Home', icon: Camera },
     { id: 'wardrobe', label: 'Wardrobe', icon: Shirt },
-    { id: 'outfits', label: 'Outfits', icon: Eye },
+    { id: 'outfits', label: 'Outfits', icon: Eye, badge: outfits.length },
+    { id: 'outfit-scanner', label: 'Outfit Scanner', icon: Camera },
     { id: 'social', label: 'Social', icon: Users },
     { id: 'marketplace', label: 'Market', icon: ShoppingBag },
   ];
+
+  // Item Detail Modal Component (same as in OutfitScanner)
+  const ItemDetailModal = () => {
+    const [itemName, setItemName] = useState(selectedItemForDetail?.name || '');
+    const [itemColor, setItemColor] = useState(selectedItemForDetail?.color || '');
+    const [itemCategory, setItemCategory] = useState(selectedItemForDetail?.type || '');
+    const [itemBrand, setItemBrand] = useState(selectedItemForDetail?.brand || '');
+    const [itemMaterial, setItemMaterial] = useState(selectedItemForDetail?.material || '');
+    const [itemSize, setItemSize] = useState(selectedItemForDetail?.size || '');
+    const [itemDescription, setItemDescription] = useState(selectedItemForDetail?.description || '');
+    const [imageRotation, setImageRotation] = useState(0);
+    
+    // Reset form when a new item is selected
+    React.useEffect(() => {
+      if (selectedItemForDetail) {
+        setItemName(selectedItemForDetail.name || '');
+        setItemColor(selectedItemForDetail.color || '');
+        setItemCategory(selectedItemForDetail.type || '');
+        setItemBrand(selectedItemForDetail.brand || '');
+        setItemMaterial(selectedItemForDetail.material || '');
+        setItemSize(selectedItemForDetail.size || '');
+        setItemDescription(selectedItemForDetail.description || '');
+        setImageRotation(0);
+      }
+    }, [selectedItemForDetail?.name, selectedItemForDetail?.color, selectedItemForDetail?.type, selectedItemForDetail?.brand]);
+
+    if (!showItemDetailModal || !selectedItemForDetail) return null;
+
+    const handleSave = () => {
+      const updatedItem = {
+        ...selectedItemForDetail,
+        name: itemName.trim() || selectedItemForDetail.name,
+        color: itemColor,
+        category: itemCategory,
+        brand: itemBrand.trim(),
+        material: itemMaterial.trim(),
+        size: itemSize.trim(),
+        description: itemDescription.trim(),
+        rotation: imageRotation
+      };
+      updateItemDetails(updatedItem);
+    };
+
+    const rotateImage = (degrees) => {
+      setImageRotation((prev) => (prev + degrees) % 360);
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold">Edit Item Details</h3>
+            <button
+              onClick={() => setShowItemDetailModal(false)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Image Section */}
+            <div className="space-y-4">
+              <h4 className="font-medium">Item Image</h4>
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <div className="w-full h-48 bg-white rounded border relative overflow-hidden mb-4">
+                  {selectedItemForDetail.imageUrl ? (
+                    <img 
+                      src={`http://localhost:5001${selectedItemForDetail.imageUrl}?t=${Date.now()}`}
+                      alt={selectedItemForDetail.name}
+                      className="w-full h-full object-contain"
+                      style={{ transform: `rotate(${imageRotation}deg)` }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <Camera className="h-12 w-12" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Image Controls */}
+                <div className="flex justify-center space-x-2">
+                  <button
+                    onClick={() => rotateImage(-90)}
+                    className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+                  >
+                    ↺ -90°
+                  </button>
+                  <button
+                    onClick={() => rotateImage(90)}
+                    className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+                  >
+                    ↻ +90°
+                  </button>
+                  <button
+                    onClick={() => setImageRotation(0)}
+                    className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Details Form */}
+            <div className="space-y-4">
+              <h4 className="font-medium">Item Details</h4>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Item Name</label>
+                <input
+                  type="text"
+                  value={itemName}
+                  onChange={(e) => setItemName(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                  placeholder="Enter item name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Color</label>
+                <input
+                  type="text"
+                  value={itemColor}
+                  onChange={(e) => setItemColor(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                  placeholder="Enter color"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select 
+                  value={itemCategory}
+                  onChange={(e) => setItemCategory(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                >
+                  <option value="Shirts">Shirts</option>
+                  <option value="Pants">Pants</option>
+                  <option value="Jackets">Jackets</option>
+                  <option value="Dresses">Dresses</option>
+                  <option value="Shoes">Shoes</option>
+                  <option value="Accessories">Accessories</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Brand</label>
+                <input
+                  type="text"
+                  value={itemBrand}
+                  onChange={(e) => setItemBrand(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                  placeholder="Enter brand name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Material</label>
+                <input
+                  type="text"
+                  value={itemMaterial}
+                  onChange={(e) => setItemMaterial(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                  placeholder="Enter material"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Size</label>
+                <input
+                  type="text"
+                  value={itemSize}
+                  onChange={(e) => setItemSize(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                  placeholder="Enter size"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <textarea
+                  value={itemDescription}
+                  onChange={(e) => setItemDescription(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                  rows="3"
+                  placeholder="Enter description"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+            <button
+              onClick={() => setShowItemDetailModal(false)}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Show splash screen on initial load or when idle
+  if (showSplashScreen || isIdle) {
+    return (
+      <SplashScreen 
+        onComplete={isIdle ? handleWakeFromIdle : handleSplashComplete}
+        isIdle={isIdle}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -643,13 +1332,26 @@ const performAIDetection = async (imageFile) => {
           onClose={() => setShowCamera(false)}
         />
       )}
+
+      {/* Item Detail Modal */}
+      <ItemDetailModal />
       
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg"></div>
+              <img 
+                src="/images/closet-monkey-logo.png" 
+                alt="Closet Monkey Logo" 
+                className="w-8 h-8 rounded-lg object-contain"
+                onError={(e) => {
+                  // Fallback to gradient if image fails to load
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'block';
+                }}
+              />
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg" style={{display: 'none'}}></div>
               <h1 className="text-xl font-bold text-gray-900">Closet Monkey</h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -672,7 +1374,7 @@ const performAIDetection = async (imageFile) => {
                 <button
                   key={item.id}
                   onClick={() => setCurrentView(item.id)}
-                  className={`flex items-center space-x-2 py-4 border-b-2 transition-colors ${
+                  className={`flex items-center space-x-2 py-4 border-b-2 transition-colors relative ${
                     currentView === item.id
                       ? 'border-blue-600 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -680,6 +1382,11 @@ const performAIDetection = async (imageFile) => {
                 >
                   <Icon className="h-5 w-5" />
                   <span className="font-medium">{item.label}</span>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                      {item.badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -693,6 +1400,7 @@ const performAIDetection = async (imageFile) => {
         {currentView === 'wardrobe' && <WardrobeView />}
         {currentView === 'addItem' && <AddItemView />}
         {currentView === 'outfits' && <OutfitsView />}
+        {currentView === 'outfit-scanner' && <OutfitScannerView />}
         {currentView === 'social' && (
           <div className="text-center py-12">
             <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />

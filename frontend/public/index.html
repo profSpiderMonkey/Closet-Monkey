@@ -7,7 +7,14 @@
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="Closet Monkey - AI-powered wardrobe management" />
     <title>Closet Monkey</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Only load Tailwind in development, not production
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const tailwindScript = document.createElement('script');
+        tailwindScript.src = 'https://cdn.tailwindcss.com';
+        document.head.appendChild(tailwindScript);
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
